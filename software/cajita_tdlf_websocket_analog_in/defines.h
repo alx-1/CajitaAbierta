@@ -39,7 +39,7 @@
 const char* ssid = "link"; //Enter SSID
 const char* password = "nidieunimaitre"; //Enter Password
 
-const char* websockets_server_host = "192.168.0.100"; //Enter server address
+const char* websockets_server_host = "192.168.0.101"; //Enter server address
 //const char* websockets_server_host = "serverip_or_name"; //Enter server address
 
 #define WEBSOCKETS_PORT     8000
