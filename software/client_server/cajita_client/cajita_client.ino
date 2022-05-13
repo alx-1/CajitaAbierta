@@ -61,8 +61,13 @@ IPAddress ip(192, 168, 4, 1);
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 WiFiUDP Udp;
 IPAddress myIP;                    // the IP address of your shield
-
 //// Fin WiFi UDP connection ////
+
+///// For Receiving UDP /////////////
+unsigned int localPort = 8889;      // local port to listen on
+char packetBuffer[20 + 1]; //buffer to hold incoming packet
+///// Fin Receiving UDP ////////////
+
 
 ////////////// TFT SCREEN //////////
 #include <SPI.h>
@@ -84,6 +89,8 @@ unsigned long leTemps = 0;
 unsigned long elViejoTiempo = 0;
 unsigned long intervalleEntreResp = 0;
 
+bool invertScreen = false;
+
 void begin() {
 
   Serial.begin(9600);
@@ -104,6 +111,11 @@ void begin() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
   myIP = WiFi.localIP();
+
+  ////// For Receiving UDP /////
+  Serial.printf("UDP server on port %d\n", localPort);
+  Udp.begin(localPort);
+  //////////////////////////////
 
   pinMode (LED_BUILTIN, OUTPUT); // LED del ESP8266
 
@@ -184,21 +196,52 @@ void step() {
     Serial.println("belly, 1");
   }
 
+    // if there's data available, read a packet
+  int packetSize = Udp.parsePacket();
+  if (packetSize) {
+   /* Serial.printf("Received packet of size %d from %s:%d\n    (to %s:%d, free heap = %d B)\n",
+                  packetSize,
+                  Udp.remoteIP().toString().c_str(), Udp.remotePort(),
+                  Udp.destinationIP().toString().c_str(), Udp.localPort(),
+                  ESP.getFreeHeap());
+    */
+    // read the packet into packetBufffer
+    //int n = Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
+    int n = Udp.read(packetBuffer, 20);
+
+    packetBuffer[n] = 0;
+    //Serial.println("Contents:");
+    Serial.println(packetBuffer);
+    if (packetBuffer[0] == '1'){ // This compares the received message (we're sending '1')
+      //"Resetting";
+      invertScreen == true;
+      ESP.restart();
+    }
+  }
+
     // Display values on the screen 
   display.clearDisplay();
+  if (invertScreen == true){
+
+    display.invertDisplay(true);
+   
+  }
   display.setTextSize(1);             // Normal 1:1 pixel scale
   display.setTextColor(WHITE);        // Draw white text
   display.setCursor(0,0); 
   display.println(myIP);// Start at top-left corner
   //display.println(F("Client connected ?"));
-  display.setCursor(5,16);             
+  display.setCursor(0,16);             
   display.setTextSize(2);             // Draw 2X-scale text
   display.setTextColor(WHITE);
   // display.invertDisplay(true);
   
-  display.println(F("Sensor")); 
-  display.setCursor(15,35); 
+  display.print(F("Sensor")); 
+  display.setCursor(75,16); 
   display.println(in);
+   display.setCursor(0,32); 
+  display.println(packetBuffer);
+
   
   display.display();
   delay(50); 

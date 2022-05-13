@@ -1,5 +1,6 @@
 /* Creates a WiFI access point (default IP is 192.168.4.1) opens up Udp port 8888 and accepts data. 
-   hacked from the ESP8266 AP and Udp examples by Alexandre Castonguay for Yesica Duarte
+   hacked together by Alexandre Castonguay for Yesica Duarte
+   REQUIRES : ESP32, tested on a node32s model.
 */ 
 // matches with version 5 of the client
 
@@ -13,8 +14,9 @@ unsigned int localPort = 8888;      // local port to listen on
 // buffers for receiving and sending data
 
 //char packetBuffer[UDP_TX_PACKET_MAX_SIZE + 1]; //buffer to hold incoming packet,
-char packetBuffer[20 + 1]; //buffer to hold incoming packet,
+char packetBuffer[20 + 1]; //buffer to hold incoming packet
 char  ReplyBuffer[] = "acknowledged\r\n";       // a string to send back
+bool sendReset = true;
 
 WiFiUDP Udp;
 
@@ -61,10 +63,17 @@ void loop()
     //Serial.println("Contents:");
     Serial.println(packetBuffer);
 
-    // send a reply, to the IP address and port that sent us the packet we received
+//    send a reply, to the IP address and port that sent us the packet we received
     Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
     Udp.print(ReplyBuffer); // "acknowledged\r\n"
     Udp.endPacket();
+
+    if (millis() > 20000 && sendReset == true){ // Change this condition to a button or a received message form a web page. A button is less complicated.
+        Udp.beginPacket(Udp.remoteIP(), 8889);
+        Udp.print(1); // 1 is the message the client is waiting for in order to reboot
+        Udp.endPacket();
+        sendReset = false; // We sent the reset message
+    }
 
     delay(100);
   }

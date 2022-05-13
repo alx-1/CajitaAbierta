@@ -1,13 +1,17 @@
 /*
  *
  *  This sketch sends sensor data to a UDP socket on the tdlf server.
+ *  Can be used along with 'chataigne' to interconnect to other software.
+ *  It is designed to be used with the 'cajita abierta' ESP32S breakout board
+ *  TODO : Add OSC messages
  *
  */
-
+#include <Arduino.h>
+#include <analogWrite.h>
 #include <WiFi.h>
 #include <WiFiUdp.h>
 
-// WiFi network name and password:
+// WiFi network name and password: // same as the tdlf server
 const char * networkName = "link";
 const char * networkPswd = "nidieunimaitre";
 
@@ -20,21 +24,16 @@ const int udpPort = 3333;
 //Are we currently connected?
 boolean connected = false;
 
-int nmb = 0; // for testing
+//int nmb = 0; // for testing
 int sensorValue = 42;
-int sensorValue1 = 43;
-int sensorValue2 = 44;
-int sensorValue3 = 45;
+//int sensorValue1 = 43;
+//int sensorValue2 = 44;
+//int sensorValue3 = 45;
 String myDataType = "s";
 String msg = "the medium is...";
 
 //The udp library class
 WiFiUDP udp;
-
-// variables for lighting onboard LED on heartbeat without delays
-int LED = 2;       // onboard LED
-
-
 
 ////////////// TFT SCREEN //////////
 #include <SPI.h>
@@ -54,9 +53,9 @@ void setup() {
   //Connect to the WiFi network
   connectToWiFi(networkName, networkPswd);
 
-  //optional LED for displaying heartbeat
-  pinMode(LED, OUTPUT);
-
+  // Set resolution for a specific pin
+  analogWriteResolution(LED_BUILTIN, 12);
+  
   ///////////// TFT DISPLAY /////////////
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
@@ -75,24 +74,26 @@ void setup() {
 void loop() {
   // Serial.println("testing");
 
-  sensorValue = analogRead(23);
-  sensorValue1 = analogRead(34);
-  sensorValue2 = analogRead(33);
-  sensorValue3 = analogRead(32);
-  Serial.println(sensorValue1);
-  Serial.println(sensorValue2);
-  Serial.println(sensorValue3);
-  
+  sensorValue = analogRead(35);
+  Serial.println(sensorValue);
 
-    // msg = myDataType+String(sensorValue);
-    msg = myDataType+String(nmb);
+  sensorValue = map(sensorValue,0,4095,0,255);
+  analogWrite(LED_BUILTIN, sensorValue);
+  
+  //sensorValue2 = analogRead(33);
+  //sensorValue3 = analogRead(32);
+  //Serial.println(sensorValue2);
+  //Serial.println(sensorValue3);
+  
+    msg = myDataType+String(sensorValue);
+    // msg = myDataType+String(nmb); // for testing
     Serial.println(msg);
   
     //only send data when connected
     if(connected){
       //Send a packet
       udp.beginPacket(udpAddress,udpPort);
-      udp.print(msg); // "breath 42"
+      udp.print(msg); // "s42" // s is needed as it is the selector message for the tdlf server
       udp.endPacket();
     }
  
@@ -100,24 +101,25 @@ void loop() {
     display.clearDisplay();
     display.setTextSize(1);             // Normal 1:1 pixel scale
     display.setTextColor(WHITE);        // Draw white text
-    display.setCursor(0, 0);
-    //display.println(myIP);// Start at top-left corner
+    display.setCursor(5, 0);
+    display.print(F("IP: "));// Start at top-left corner
+    display.println(WiFi.localIP());// Start at top-left corner
     //display.println(F("Client connected ?"));
     display.setCursor(5, 16);
     display.setTextSize(2);             // Draw 2X-scale text
     display.setTextColor(WHITE);
     // display.invertDisplay(true);
-    display.println(F("Breath"));
-    display.setCursor(15, 35);
-    display.println(sensorValue);////////////////////////////
+    display.println(F("Sensor: "));
+    display.setCursor(5, 40);
+    display.println(sensorValue);
     display.display();
 
     delay(50);
 
-    nmb++;
-    if(nmb >= 99){
-      nmb = 0;
-    }
+//    nmb++;
+//    if(nmb >= 99){
+//      nmb = 0;
+//    }
     
   } //  Fin del loop
 
