@@ -112,6 +112,7 @@ void loop() {
     display.println(F("Sensor: "));
     display.setCursor(5, 40);
     display.println(sensorValue);
+    Serial.println("donde esta la pantalla??");
     display.display();
 
     delay(50);
