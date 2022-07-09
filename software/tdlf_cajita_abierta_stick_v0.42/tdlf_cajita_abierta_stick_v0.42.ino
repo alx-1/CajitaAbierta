@@ -9,6 +9,7 @@
 // Tof's MicroOSCUDP
 // microsmooth
 // Adafruit's GFX + SSD1306
+// LITTLEFS
 //
 // Config //
 #define Accelerometer true
@@ -34,14 +35,11 @@
    
 #define FORMAT_LITTLEFS_IF_FAILED true
 
-// LITTLEFS.format(); // Only do this once // doesn't work
-
-
 bool configure = false; // A button press will start it
 bool recording = false; // Save data while sending to the tdlf server
-bool recordingStandAlone = false; // Save data on it's own (message in a bootle)
+bool recordingStandAlone = false; // Save data on it's own (message in a bottle)
 bool playback = false;
-const int arrayLength = 10000; // 65535
+const int arrayLength = 5000; // 65535
 byte sensorData[arrayLength] = {0}; // Array to store the values, intialize with 0s
 long sensorIndex = 0; // Keep track of the values in the array
 
@@ -120,7 +118,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define SHORT_PRESS_TIME 1000 // 1000 milliseconds
 #define LONG_PRESS_TIME  1000 // 1000 milliseconds
 
-ezButton button1(0); // create ezButton object that attach to pin GPIO0 (default button on ESP32s, Node)
+ezButton button(0); // create ezButton object that attach to pin GPIO0 (default button on ESP32s, Node)
 unsigned long pressedTime  = 0;
 unsigned long releasedTime = 0;
 bool isPressing = false;
@@ -277,7 +275,7 @@ void setup() {
 
   delay(10);
   
-  button1.setDebounceTime(50); // set debounce time to 50 milliseconds
+  button.setDebounceTime(50); // set debounce time to 50 milliseconds
  
 
   for (int i = 0; i < 32; ++i)
@@ -606,45 +604,26 @@ void setup() {
   #endif
 
   /// LITTLEFS ///
-//  if(!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)){
-//        Serial.println("SPIFFS Mount Failed");
-//        return;
-//    }
-
   if(!LITTLEFS.begin(FORMAT_LITTLEFS_IF_FAILED)){
         Serial.println("LITTLEFS Mount Failed");
         return;
     }
+  //  LITTLEFS.format(); // Only do this once
+  /// End LITTLEFS ///
 
-    LITTLEFS.format(); // Only do this once
-    
-//  File file = SPIFFS.open("/sensorData.txt", FILE_WRITE);
-//  if(!file){
-//       Serial.println("- failed to open file for writing");
-//       return;
-//   }
-   File file = LITTLEFS.open("/sensorData.txt", "w");
-  if(!file){
-       Serial.println("- failed to open file for writing");
-       return;
-   }
-
-   
-//   if(file.print("")){
-//       Serial.println("- file written");
-//    } else {
-//       Serial.println("- write failed");
-//    }
-   file.close();
-   /// End SPIFFS ///
-
-  
 } // End of Setup
 
 void loop() {
 
   if ( sensorIndex >= arrayLength-12 ) {  // Because there are 12 data points (could go over the array's memory)
+        if (recordingStandAlone){
+          recordingStandAlone = 0;
+          // Start configure
+          configure = 1;
+        }
+      
         sensorIndex = 0; // Loop back throught the array
+        
       } 
 
       Serial.print("sensorIndex : ");
@@ -668,18 +647,45 @@ void loop() {
     //Serial.println(" ");
     //}
     
-    
-  button1.loop(); // MUST call the loop() function first
-  int btn1State = button1.getState();
+///// Button detect short or long presses /////  
+  button.loop(); // MUST call the loop() function first
 
-  if(button1.isReleased()){
-    Serial.println("The button 1 is released");
-    configure = true; // Need to set a flag so we start the config routine
+  if(button.isPressed()){
+    pressedTime = millis();
+    isPressing = true;
+    isLongDetected = false;
   }
-    
+
+  if(button.isReleased()) {
+    isPressing = false;
+    releasedTime = millis();
+
+    long pressDuration = releasedTime - pressedTime;
+
+    if( pressDuration < SHORT_PRESS_TIME )
+      Serial.println("A short press is detected");
+      configure = true; // Need to set a flag so we start the config routine
+    }
+
+  if(isPressing == true && isLongDetected == false) {
+    long pressDuration = millis() - pressedTime;
+
+    if( pressDuration > LONG_PRESS_TIME ) {
+      Serial.println("A long press is detected");
+      isLongDetected = true;
+      // recordingStandAlone = true; // Let's record them waves...maybe start a delay
+    }
+  }
   
-  if ((WiFi.status() == WL_CONNECTED)) {
-    if(!oscServerFound) {
+  
+  if ((WiFi.status() == WL_CONNECTED || recordingStandAlone)) { // Testing
+    if(recordingStandAlone){
+      Serial.print("recordingStandAlone : ");
+      Serial.println(recordingStandAlone);
+      
+    }
+    else if(!oscServerFound) {
+      
       //browseService("touchoscbridge", "udp");
       browseService("osc", "udp"); // _osc._udp
       // browseService("http", "udp"); // for another ESP32 running mDNS_Web_Server (udp)
@@ -687,7 +693,6 @@ void loop() {
      } else {
       startMillis = millis();             //save the starting time
 
-      
       #if defined Accelerometer
       if( checkAccel == true | checkPanTiltRoll == true ){
         if ( playback == 0 ) {
@@ -727,18 +732,17 @@ void loop() {
         if  ( playback == 0 ) {
           // check the sensors here
           sensor1Value = analogRead(32);
-          //Serial.print("sensor1Value : ");
-          //Serial.println(sensor1Value);
+          Serial.print("sensor1Value : ");
+          Serial.println(sensor1Value);
           sensor2Value = analogRead(33);
-          //Serial.print("sensor2Value : ");
-          //Serial.println(sensor2Value);
+          Serial.print("sensor2Value : ");
+          Serial.println(sensor2Value);
           sensor3Value = analogRead(34);
-          //Serial.print("sensor3Value : ");
-          //Serial.println(sensor3Value);
+          Serial.print("sensor3Value : ");
+          Serial.println(sensor3Value);
           sensor4Value = analogRead(35);
-          //Serial.print("sensor4Value : ");
-          //Serial.println(sensor4Value);
-          
+          Serial.print("sensor4Value : ");
+          Serial.println(sensor4Value);
         } else {
           sensor1Value = sensorData[sensorIndex+8]; // Read the values from the array
           sensor2Value = sensorData[sensorIndex+9];
@@ -995,12 +999,16 @@ void loop() {
    // Serial.println("we are there");
   while ((WiFi.status() != WL_CONNECTED))
   { 
-    Serial.println("*");
+    Serial.println("**");
     analogWrite(LED_BUILTIN, 0);
     delay(125);
     analogWrite(LED_BUILTIN, 255);
     delay(125);
     server.handleClient();
+    
+   if (recordingStandAlone){
+     break;
+   }
     
   }
 
@@ -1199,7 +1207,7 @@ bool readAccelerometer() {
 //    Serial.print("Z=");
 //    Serial.print(aIntz);
 //    Serial.println(" g");
-//    Serial.println("**********************");
+//    Serial.println("**********");
     delay(1); // 50
     }
  
@@ -1212,7 +1220,7 @@ bool testWifi(void)
   int c = 0;
   //Serial.println("Waiting for Wifi to connect");
   while ( c < 20 ) {
-    if (WiFi.status() == WL_CONNECTED)
+    if (WiFi.status() == WL_CONNECTED || recordingStandAlone)
     {
       return true;
     }
@@ -1336,18 +1344,22 @@ void createWebServer()
       content += "<style>" "body {  font-family: Arial, Helvetica, sans-serif;Color: #111111;font-size: 18px; margin-left:auto;margin-right:auto;width:400px; }";
       content += "ol {list-style-type: none}";
       content += "</style>";
+      content += "<ol><li>";
       content += "<form action=\"/scan\" method=\"POST\">";
       content += "<INPUT type=\"submit\" value=\" scan\" style=\"font-size:18px ; background-color:#DD622D ; border: none;\">";
       content += "</form>";
       content += "<p>"; 
+      content += "</li>";
       content += st;
+      content += "<li>";
       content += "</p><form method='get' action='wificfg'><label> SSID: </label><input name='ssid' style=\"font-size:18px;\" required size=20><br /><label> PWD: </label><input name='pass' type='password' style=\"font-size:18px;\" size=20> <p>";
       content += "<INPUT type=\"submit\" value=\"submit\" style=\"font-size:18px ; background-color:#DD622D ; border: none;\">";
       content += "</form>";
-
+      content += "</li><li>";
       content += "<form method='get' action='reboot'>";
       content += "<INPUT type=\"submit\" value=\"reboot\" style=\"font-size:18px ; background-color:#DD622D ; border: none;\">";
       content += "</form>";
+      content += "</li><li>";
     
       content += "</html>";
       server.send(200, "text/html", content);
@@ -1525,24 +1537,24 @@ void createWebServer()
       content += "</form>";
       content += "</li><li>";
 
-      content += "</p><p><form method='get' action='recordingStandAlone'>";
+      content += "</p><p><form method='get' action='recordingStandAlonecfg'>";
       // content += "<label> File : </label><input name='filename' style=\"font-size:18px;\" required length=24>";
       content += "<INPUT type=\"submit\" value=\"record no WiFI\" style=\"font-size:20px ; background-color:#DD622D ; border: none;\">";
+      content += "<label for=\"Delay\">Delay</label><select name=\"monDelai\" id=\"monDelai\" style=\"font-size:18px;\" > <option value=\"5\">5</option><option value=\"10\">10</option><option value=\"20\">20</option><option value=\"30\">30</option><option value=\"40\">40</option><option value=\"50\">50</option><option value=\"60\">60</option></select>";
       content += "</form>";
       content += "</li><li>";
 
       
       content += "</p><p><form method='get' action='savecfg'>";
-      // content += "<label> File : </label><input name='filename' style=\"font-size:18px;\" required length=24>";
-      content += "<INPUT type=\"submit\" value=\"save\" style=\"font-size:20px ; background-color:#DD622D ; border: none;\">";
+      content += "<INPUT type=\"submit\" value=\"save\" style=\"font-size:20px ; background-color:#FF622D ; border: none;\">";
       content += "</form>";
       content += "</li><li>";
 
       content += "</p><p><form method='get' action='playcfg'>";
-      content += "<INPUT type=\"submit\" value=\"play\" style=\"font-size:20px ; background-color:#DD622D ; border: none;\">";
+      content += "<INPUT type=\"submit\" value=\"playback\" style=\"font-size:20px ; background-color:#DD622D ; border: none;\">";
       // content += "<br>";
       // content += "<label> File : </label><input name='filename' style=\"font-size:18px;\" required length=24>";
-      content += "<label> BPM : </label><input type ='text' name='bpm' style=\"font-size:20px;\" size=4>";
+      // content += "<label> BPM : </label><input type ='text' name='bpm' style=\"font-size:20px;\" size=4>";
       // need to add options for playback such as file name, speed or smoothing
       content += "</form>";
       content += "</li><li>";
@@ -2033,16 +2045,16 @@ void createWebServer()
          
     }); // Fin Record
 
-    server.on("/recordingStandAlone", []() {
+    server.on("/recordingStandAlonecfg", []() {
+
+      int monDelai = server.arg("monDelai").toInt();
+      Serial.print("monDelai : ");
+      Serial.println(monDelai);
 
       content = "{\"Success\":\"Starting recording Stand Alone ... hit back to continue with the config\"}";
       statusCode = 200;
       server.sendHeader("Access-Control-Allow-Origin", "*");
       server.send(statusCode, "application/json", content);
-
-      //delay(4000); // Start recording in 10s...
-      recordingStandAlone = true;
-      Serial.println("Recording Stand Alone started");
 
       // End the web configure
       server.stop();
@@ -2060,11 +2072,25 @@ void createWebServer()
       display.clearDisplay();
       display.setTextSize(2);             // Normal 1:1 pixel scale
       display.setCursor(0, 5);
-      display.print(F("Stand Alone"));// Start at top-left corner
+      display.print(F("Bouteille"));// Start at top-left corner
       display.setCursor(0, 25);
-      display.print(F("Mode"));// Start at top-left corner
+      display.print(F("a la mer"));// Start at top-left corner
+      display.setCursor(0, 45);
+      display.print(F("..."));// Start at top-left corner
       display.display();
-  
+      delay(3000);
+
+      for ( int i = monDelai; i >= 1; i--){
+        display.clearDisplay();
+        display.setTextSize(2);             // Normal 1:1 pixel scale
+        display.setCursor(42, 25);
+        display.print((i));// Start at top-left corner
+        display.display();
+        delay(1000);
+      }
+      
+      recordingStandAlone = true;
+      Serial.println("Recording Stand Alone started");
       configure = false; // reset that thang
       sensorIndex = 0; // Start recording anew
       playback = 0; // Can't record and playback at the same time
@@ -2077,62 +2103,48 @@ void createWebServer()
     server.on("/playcfg", []() {
 
       Serial.println("Will open file, save it into the array and start going through the array");
-      // Spiffs.open()...
-      // Read all data onto the array and start going through the array...
 
       File filetoRead = LITTLEFS.open("/sensorData.txt", "r");
+      
       if(!filetoRead || filetoRead.isDirectory()){
         Serial.println("- failed to open file for reading");
         return;
-    }
-      Serial.println("- read from file:");
-      
-//      int count = 0;
-//      while(filetoRead.available()){
-//        Serial.write(filetoRead.read());
-//        int grr = atoi(filetoRead.read()); // - '48';;
-//        sensorData[count] = sensorData[grr];
-//        count++;
-//        }
-//        filetoRead.close();
-      
-        int count = 0;
-
-        char buffer[6]; // 6
-        String stringOne = "";    
-        int value;
-
-        while(filetoRead.available()){
-          int l = filetoRead.readBytesUntil('\n', buffer, sizeof(buffer)-1);
-          buffer[l] = '\0';
-          value = atoi(buffer);
-          sensorData[count] = value; // Populating the sensorData array
-          Serial.print("count : ");
-          Serial.println(count);
-
-          Serial.print("sensorData[count] : ");
-          Serial.println(sensorData[count]);
-          //stringOne = String(buffer); // converting a constant char buffer into a String
-          //value = stringOne.toInt();
-
-//          if (value >= 0){
-//            //Serial.print("value : ");
-//            //Serial.println(value);
-//          }
-         
-            count++;
-            if ( count > 500 ) {
-              break;    
-            }
         }
-       
         
-      filetoRead.close();
+      Serial.println("- read from file:");
 
-      content = "{\"Success\":\"Starting playback in 4s ... hit back to continue with the config\"}";
-      statusCode = 200;
-      server.sendHeader("Access-Control-Allow-Origin", "*");
-      server.send(statusCode, "application/json", content);
+      display.clearDisplay();
+      display.setTextSize(2);             // Normal 1:1 pixel scale
+      display.setCursor(3, 5);
+      display.print(F("Loading"));// Start at top-left corner
+      display.setCursor(3, 25);
+      display.print(F("File"));// Start at top-left corner
+      display.setCursor(0,48);
+      display.setTextSize(1);  
+      display.print(F("Might take time"));
+      display.display();
+      
+      int count = 0;
+      char buffer[6]; // 6
+      int value;
+      
+      while(filetoRead.available()){
+        int l = filetoRead.readBytesUntil('\n', buffer, sizeof(buffer)-1);
+        buffer[l] = '\0';
+        value = atoi(buffer);
+        sensorData[count] = value; // Populating the sensorData array
+        Serial.print("count : ");
+        Serial.println(count);
+        Serial.print("sensorData[count] : ");
+        Serial.println(sensorData[count]);
+        count++;
+        
+        if ( count > arrayLength ) {
+          break;
+          }
+        }
+        
+        filetoRead.close();
 
       display.clearDisplay();
       display.setTextSize(2);             // Normal 1:1 pixel scale
@@ -2140,12 +2152,18 @@ void createWebServer()
       display.print(F("Playback"));// Start at top-left corner
       display.setCursor(3, 25);
       display.print(F("Mode"));// Start at top-left corner
-      
-      display.setTextSize(1);             // Normal 1:1 pixel scale
-      display.setCursor(3, 42);
-      display.print(F("Loading file"));// Start at top-left corner
-    
+      display.setCursor(0,48);
+      display.setTextSize(1);  
+      display.print(F("Re-play Party"));
       display.display();
+      delay(4000);
+
+      content = "{\"Success\":\"Starting playback in 4s ... hit back to continue with the config\"}";
+      statusCode = 200;
+      server.sendHeader("Access-Control-Allow-Origin", "*");
+      server.send(statusCode, "application/json", content);
+
+ 
       
 
       // End the web configure
@@ -2161,8 +2179,6 @@ void createWebServer()
         Serial.println("Server stopped and WiFi restarted");
         Serial.println("Start playback");
         }
-
-      delay(4000);
 
       playback = true;
       configure = false; // reset that thang
@@ -2185,51 +2201,59 @@ void createWebServer()
       display.println(F("Saving to"));// Start at top-left corner
       display.setCursor(0, 25); 
       display.println(F("File"));
-      display.setCursor(0,47);
+      display.setCursor(0,48);
       display.setTextSize(1);  
       display.print(F("Might take a few mins"));
       display.display();
      
-      // open file
-      //File fileToAppend = SPIFFS.open("/sensorData.txt", "a");
 
-      File fileToAppend = LITTLEFS.open("/sensorData.txt", "a");
+      File fileToAppend = LITTLEFS.open("/sensorData.txt", "a");       // open file
       
       for ( int i = 0 ; i < arrayLength; i++){ // Change this back to 65535
         
           fileToAppend.println(sensorData[i]);
-          delay(2);
-          //Serial.print("sensorData[i] : "); // Everything is fine here
+          //delay(2);
+          //Serial.print("sensorData[i] : "); 
           //Serial.println(sensorData[i]);
           //fileToAppend.println(i);
           //fileToAppend.print(',');
-          //Serial.println("doing it");
-          
+          //Serial.println("doing it");     
       }
       
       fileToAppend.close();
 
-     
-      content = "{\"Success\":\"Saving file ... This might take time ... hit back to continue with the config\"}";
-      statusCode = 200;
-      server.sendHeader("Access-Control-Allow-Origin", "*");
-      server.send(statusCode, "application/json", content);
+      display.clearDisplay();
+      display.setTextSize(2);  // Normal 1:1 pixel scale
+      display.setCursor(0, 5);
+      display.println(F("File saved"));// Start at top-left corner
+      display.setCursor(0,48);
+      display.setTextSize(1);  
+      display.print(F("After party reboot!"));
+      display.display();
+      delay(3000);
 
-      // End the web configure
-      server.stop();
-      server.close();
+      ESP.restart(); // Rebooting
 
-      // Close the access point
-      WiFi.softAPdisconnect(true);  // Event we should get : SYSTEM_EVENT_AP_STOP
-      WiFi.disconnect(); 
-      WiFi.begin(esid.c_str(), epass.c_str());
+//      content = "{\"Success\":\"Saving file ... This might take time ... hit back to continue with the config\"}";
+//      statusCode = 200;
+//      server.sendHeader("Access-Control-Allow-Origin", "*");
+//      server.send(statusCode, "application/json", content);
+//
+//      // End the web configure
+//      server.stop();
+//      server.close();
+//
+//      // Close the access point
+//      WiFi.softAPdisconnect(true);  // Event we should get : SYSTEM_EVENT_AP_STOP
+//      WiFi.disconnect(); 
+//      WiFi.begin(esid.c_str(), epass.c_str());
 
-      playback = false;
-      configure = false; // reset that thang
-      sensorIndex = 0; // Start playing from the top
-      recording = 0; // Don't attempt to record data if we're reading back from the sensorData array.
-      recordingStandAlone = 0; // Don't attempt to record data if we're reading back from the sensorData
-      
+//      playback = false;
+//      configure = 0; // Go back to config mode once the file is saved
+//      sensorIndex = 0; // Start playing from the top
+//      recording = 0; // Don't attempt to record data if we're reading back from the sensorData array.
+//      recordingStandAlone = 0; // Don't attempt to record data if we're reading back from the sensorData
+//      
     }); // Fin Save
 
     /// Erase files ///
