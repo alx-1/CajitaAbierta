@@ -731,18 +731,23 @@ void loop() {
       if ( checkSensor1 == true | checkSensor2 == true | checkSensor3 == true | checkSensor4 == true ){
         if  ( playback == 0 ) {
           // check the sensors here
+          
           sensor1Value = analogRead(32);
-          Serial.print("sensor1Value : ");
+          sensor1Value = map(sensor1Value, 360, 4094, 0, 127);
+          Serial.print("sensor1Value : "); // 360 - 4095
           Serial.println(sensor1Value);
-          sensor2Value = analogRead(33);
+          sensor2Value = analogRead(33); // 0 - 3025
+          sensor2Value = map(sensor2Value, 0, 3025, 0, 127);
           Serial.print("sensor2Value : ");
           Serial.println(sensor2Value);
           sensor3Value = analogRead(34);
-          Serial.print("sensor3Value : ");
+          sensor3Value = map(sensor3Value, 740, 4010, 0, 127);
+          Serial.print("sensor3Value : "); // 740 - 4010
           Serial.println(sensor3Value);
           sensor4Value = analogRead(35);
+          sensor4Value = map(sensor4Value, 90, 4095, 0, 127);
           Serial.print("sensor4Value : ");
-          Serial.println(sensor4Value);
+          Serial.println(sensor4Value); // 90 - 4095
         } else {
           sensor1Value = sensorData[sensorIndex+8]; // Read the values from the array
           sensor2Value = sensorData[sensorIndex+9];
