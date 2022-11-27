@@ -1,7 +1,16 @@
-int maDonne;
+
 
 //#include <OSCMessage.h>
 
+// Capteurs //
+#define trigPin A4
+#define echoPin A5
+long duration;
+long distance;
+ //Capteur mouvement :
+int Capteur = 4; 
+#include <SPI.h>
+#include <Wire.h>
 
 //// WiFi UDP connection ////
 #include <WiFi.h>
@@ -46,6 +55,12 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 void setup() {
 
   Serial.begin(115200);
+
+  // Capteurs //
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  // Capteur de mouvement :
+  pinMode(Capteur, INPUT); //définir la broche comme une entrée
 
   Serial.print("Connecting to ");
   Serial.println(ssid);
@@ -96,8 +111,55 @@ void setup() {
 
 void loop(){
 
-  maDonne = analogRead(35);
-  Serial.println(maDonne);
+// Capteur distance //
+// Envoie de l'onde
+ digitalWrite(trigPin, LOW);
+ delayMicroseconds(2);
+ digitalWrite(trigPin, HIGH);
+ delayMicroseconds(10);
+ digitalWrite(trigPin, LOW);
+ // Réception de l'écho
+ duration = pulseIn(echoPin, HIGH);
+
+ // Calcul de la distance
+ distance = (duration/2) / 29.1;
+ if (distance >= 400 || distance <= 0){
+  Serial.println("Hors plage");
+  }
+  else {
+  Serial.print("distance = ");
+  Serial.print(distance);
+  Serial.println(" cm");
+  Udp.beginPacket(ip, 8888);
+  Udp.print(distance);
+  Udp.endPacket();
+  }
+ 
+ delay(25); // délai entre deux mesures
+ // Fin capteur distance
+
+  // Capteur de mouvement :
+  if (digitalRead(Capteur) == HIGH) { //le capteur détecte un mouvement
+    Serial.println("mouvement detecte");
+    //display.setCursor(25, 40);
+    //display.println("OUI");
+    Udp.beginPacket(ip, 8888);
+    Udp.print(1);
+    Udp.endPacket();
+
+
+  }
+  else { //sinon le capteur ne détecte aucun mouvement
+    Serial.println("pas de mouvement detecte");
+    //display.setCursor(25, 40);
+    //display.println("NON");
+    Udp.beginPacket(ip, 8888);
+    Udp.print(0);
+    Udp.endPacket();
+  }
+  display.display();
+  delay(20);
+ 
   
   // display /////
  // Display values on the screen 
@@ -114,22 +176,15 @@ void loop(){
   
   display.println(F("Sensor")); 
   display.setCursor(15,35); 
-  display.println(maDonne);
+  display.println(distance);
   
   display.display();
   
   ////////////////
     
-    Udp.beginPacket(ip, 8888);
-    Udp.print("hello");
-    Udp.endPacket();
-//  uint8_t midi[4];
-//  midi[0] = 0;
-//  midi[1] = 64; // changer à "midi[1] = maDonne;"
-//  midi[2] = 11;  // expression
-//  midi[3] = 176;
-//
-//  oscUdp.sendMessage("/midi",  "m",  midi); // send to Udp server
+   // Udp.beginPacket(ip, 8888);
+   // Udp.print("hello");
+   // Udp.endPacket();
 
   ////////////////
   

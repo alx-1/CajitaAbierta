@@ -27,7 +27,7 @@
 #include "microsmooth.h"
 
 #include "FS.h"
-#include "LITTLEFS.h" // LITTLEFS is declared
+#include "LITTLEFS.h" 
 
 /* You only need to format LITTLEFS the first time you run a
    test or else use the LITTLEFS plugin to create a partition
@@ -39,7 +39,7 @@ bool configure = false; // A button press will start it
 bool recording = false; // Save data while sending to the tdlf server
 bool recordingStandAlone = false; // Save data on it's own (message in a bottle)
 bool playback = false;
-const int arrayLength = 5000; // 65535
+const int arrayLength = 65535; // 65535
 byte sensorData[arrayLength] = {0}; // Array to store the values, intialize with 0s
 long sensorIndex = 0; // Keep track of the values in the array
 
@@ -618,8 +618,53 @@ void loop() {
   if ( sensorIndex >= arrayLength-12 ) {  // Because there are 12 data points (could go over the array's memory)
         if (recordingStandAlone){
           recordingStandAlone = 0;
+          
+          // Start saving the contents of the array to FS
+          
+      // use the array and save it, line by line with commas between the data points
+      Serial.println("Will save to file"); // save to file... appending I guess...
+
+      display.clearDisplay();
+      display.setTextSize(2);  // Normal 1:1 pixel scale
+      display.setCursor(0, 5);
+      display.println(F("Saving to"));// Start at top-left corner
+      display.setCursor(0, 25); 
+      display.println(F("File"));
+      display.setCursor(0,48);
+      display.setTextSize(1);  
+      display.print(F("Might take a few mins"));
+      display.display();
+     
+      LITTLEFS.remove("/sensorData.txt"); // Currently only that one file...
+      
+      File fileToAppend = LITTLEFS.open("/sensorData.txt", "a");       // open file
+      
+      for ( int i = 0 ; i < arrayLength; i++){ // Change this back to 65535
+        
+          fileToAppend.println(sensorData[i]);
+          delay(2);
+          //Serial.print("sensorData[i] : "); 
+          //Serial.println(sensorData[i]);
+          //fileToAppend.println(i);
+          //fileToAppend.print(',');
+          //Serial.println("doing it");     
+      }
+      
+      fileToAppend.close();
+
+      display.clearDisplay();
+      display.setTextSize(2);  // Normal 1:1 pixel scale
+      display.setCursor(0, 5);
+      display.println(F("File saved"));// Start at top-left corner
+      display.setCursor(0,48);
+      display.setTextSize(1);  
+      display.print(F("After party reboot!"));
+      display.display();
+      delay(3000);
+          // End saving routine
+          
           // Start configure
-          configure = 1;
+          configure = 0;
         }
       
         sensorIndex = 0; // Loop back throught the array
@@ -634,18 +679,17 @@ void loop() {
    
   }
 
-  //if (debugSerial ) {
-    //Serial.print("configure : ");
-    //Serial.println(configure);
-    //Serial.print("playback : ");
-    //Serial.println(playback);
-    //Serial.print("recording : ");
-    //Serial.println(recording);
-    //Serial.print("recordingStandAlone : ");
-    //Serial.println(recordingStandAlone);
-    //Serial.println(recordingStandAlone);
-    //Serial.println(" ");
-    //}
+  if (debugSerial ) {
+    Serial.print("configure : ");
+    Serial.println(configure);
+    Serial.print("playback : ");
+    Serial.println(playback);
+    Serial.print("recording : ");
+    Serial.println(recording);
+    Serial.print("recordingStandAlone : ");
+    Serial.println(recordingStandAlone);
+    Serial.println(" ");
+    }
     
 ///// Button detect short or long presses /////  
   button.loop(); // MUST call the loop() function first
@@ -679,48 +723,41 @@ void loop() {
   
   
   if ((WiFi.status() == WL_CONNECTED || recordingStandAlone)) { // Testing
-    if(recordingStandAlone){
-      Serial.print("recordingStandAlone : ");
-      Serial.println(recordingStandAlone);
-      
-    }
-    else if(!oscServerFound) {
-      
-      //browseService("touchoscbridge", "udp");
-      browseService("osc", "udp"); // _osc._udp
-      // browseService("http", "udp"); // for another ESP32 running mDNS_Web_Server (udp)
-      // browseService("http", "tcp"); // for another ESP32 running mDNS_Web_Server (tcp)
-     } else {
-      startMillis = millis();             //save the starting time
+    
+    if(recordingStandAlone || oscServerFound){
+      // Serial.println("Read those values");
+       startMillis = millis();             // Save the starting time
 
       #if defined Accelerometer
-      if( checkAccel == true | checkPanTiltRoll == true ){
+      if( checkAccel == true || checkPanTiltRoll == true ){
         if ( playback == 0 ) {
           error = readAccelerometer(); // Using the seed library (thank you!)  
+          // Serial.println("doin' it");
         } else {
-//        for(int i=0;i<24;i++){
-//          Serial.print(" sensorData ? ");
-//          Serial.println(sensorData[i+sensorIndex]);
-//          }
-          aIntx = sensorData[sensorIndex];  // fill in the values from the sensorData arrayrr : " );
+
+          aIntx = sensorData[sensorIndex];  // fill in the values from the sensorData array : " );
+          //Serial.print("aIntx : " );
           //Serial.println(aIntx);
           aInty = sensorData[sensorIndex+1];
-          //Serial.print("aInty err : " );
+          //Serial.print("aInty : " );
           //Serial.println(aInty);
           aIntz = sensorData[sensorIndex+2];
-          //Serial.print("aIntz err: " );
+          //Serial.print("aIntz : " );
           //Serial.println(aIntz);
           x = sensorData[sensorIndex+3];  
           y = sensorData[sensorIndex+4];
           z = sensorData[sensorIndex+5];
+          
         }
       }
       #endif
 
       #if defined PressureSensor
-      if( checkSuck == true | checkBlow == true ){
+      if( checkSuck == true || checkBlow == true ){
         if ( playback == 0 ) {
         error = readCFSensor(0x6D);         //start conversion and read on pressure sensor at 0x6D address
+        
+        
         } else {
           blowValue = sensorData[sensorIndex+6]; // fill in the values from the sensorData array here
           suckValue = sensorData[sensorIndex+7];
@@ -748,6 +785,14 @@ void loop() {
           sensor4Value = map(sensor4Value, 90, 4095, 0, 127);
           Serial.print("sensor4Value : ");
           Serial.println(sensor4Value); // 90 - 4095
+
+          if (recording || recordingStandAlone) {
+            sensorData[sensorIndex+8] = sensor1Value;
+            sensorData[sensorIndex+9] = sensor2Value;
+            sensorData[sensorIndex+10] = sensor3Value;
+            sensorData[sensorIndex+11] = sensor4Value;
+          }
+          
         } else {
           sensor1Value = sensorData[sensorIndex+8]; // Read the values from the array
           sensor2Value = sensorData[sensorIndex+9];
@@ -759,7 +804,13 @@ void loop() {
       
       while ((millis() - startMillis) < period);            //waits until period done
      
-    }
+    } else if(!oscServerFound) {  
+      //browseService("touchoscbridge", "udp");
+      browseService("osc", "udp"); // _osc._udp
+      // browseService("http", "udp"); // for another ESP32 running mDNS_Web_Server (udp)
+      // browseService("http", "tcp"); // for another ESP32 running mDNS_Web_Server (tcp) 
+    } 
+     
 
     ////////// TFT Display values ///////////
     display.clearDisplay();
@@ -791,8 +842,8 @@ void loop() {
       display.setCursor(16, 0);
       display.println(aIntx);
       
-      midi[0] = storedAccelxChanInt;      // midi channel // 90 + midi channel (note on)
-      midi[1] = aIntx; // SensorValue  // velocit
+      midi[0] = storedAccelxChanInt;   // midi channel // 90 + midi channel (note on)
+      midi[1] = aIntx; // SensorValue  // velocity
       midi[2] = storedAccelxCCInt;     // Control Change message (11 is expression) // Pitch (note value)
       midi[3] = 0;     // Extra                                          
       oscUdp.sendMessage("/midi",  "m",  midi); // send to Udp server
@@ -832,6 +883,14 @@ void loop() {
       midi[3] = 0;     // Extra                                          
       oscUdp.sendMessage("/midi",  "m",  midi); // send to Udp server
 
+//      Serial.print("testing midi : ");
+//      Serial.print(storedPanChanInt);
+//      Serial.print(" ");
+//      Serial.print(x);
+//      Serial.print(" ");
+//      Serial.print(storedPanCCInt);
+//      Serial.println(" ");
+      
       display.setCursor(41, 12);
       display.print(F("Tilt "));
       display.setCursor(67, 12);
@@ -1172,6 +1231,13 @@ bool readCFSensor(byte sensorAddress) {
     }
     
   }
+
+  if (recording || recordingStandAlone){
+    
+    sensorData[sensorIndex+6] = suckValue;
+    sensorData[sensorIndex+7] = blowValue;
+    
+  }
   
   return 0;
 }
@@ -1182,14 +1248,22 @@ bool readAccelerometer() {
   y = map(y,-320,320,0,127);
   z = map(z,-320,320,0,127);
 
+  if (recording || recordingStandAlone){
+    Serial.print("sensorIndex : ");
+    Serial.println(sensorIndex);
+    sensorData[sensorIndex] = x;
+    sensorData[sensorIndex+1] = y;
+    sensorData[sensorIndex+2] = z;
+  }
+
   if (debugSerial) {
     // Output x,y,z values 
-//    Serial.print("values of X , Y , Z: ");
-//    Serial.print(x);
-//    Serial.print(" , ");
-//    Serial.print(y);
-//    Serial.print(" , ");
-//    Serial.println(z);
+    Serial.print("values of X , Y , Z: ");
+    Serial.print(x);
+    Serial.print(" , ");
+    Serial.print(y);
+    Serial.print(" , ");
+    Serial.println(z);
     }
   
   double xyz[3];
@@ -1201,6 +1275,14 @@ bool readAccelerometer() {
   aIntx = map(aIntx,-200,200,0,127);
   aInty = map(aInty,-200,200,0,127);
   aIntz = map(aIntz,-200,200,0,127);
+
+  if (recording || recordingStandAlone){
+    //Serial.print("sensorIndex : ");
+    //Serial.println(sensorIndex);
+    sensorData[sensorIndex+3] = aIntx;
+    sensorData[sensorIndex+4] = aInty;
+    sensorData[sensorIndex+5] = aIntz;
+  }
 
   if (debugSerial) {
 //    Serial.print("X=");
@@ -1228,6 +1310,7 @@ bool testWifi(void)
     if (WiFi.status() == WL_CONNECTED || recordingStandAlone)
     {
       return true;
+      Serial.println("hello standalone");
     }
     delay(500);
     if (debugSerial) {
@@ -1545,7 +1628,7 @@ void createWebServer()
       content += "</p><p><form method='get' action='recordingStandAlonecfg'>";
       // content += "<label> File : </label><input name='filename' style=\"font-size:18px;\" required length=24>";
       content += "<INPUT type=\"submit\" value=\"record no WiFI\" style=\"font-size:20px ; background-color:#DD622D ; border: none;\">";
-      content += "<label for=\"Delay\">Delay</label><select name=\"monDelai\" id=\"monDelai\" style=\"font-size:18px;\" > <option value=\"5\">5</option><option value=\"10\">10</option><option value=\"20\">20</option><option value=\"30\">30</option><option value=\"40\">40</option><option value=\"50\">50</option><option value=\"60\">60</option></select>";
+      content += "<label for=\"Delay\">Delay</label><select name=\"monDelai\" id=\"monDelai\" style=\"font-size:18px;\" > <option value=\"5\">5</option><option value=\"10\">10</option><option value=\"20\">20</option><option value=\"30\">30</option><option value=\"40\">40</option><option value=\"50\">50</option><option value=\"60\">60</option><option value=\"300\">300</option></select>";
       content += "</form>";
       content += "</li><li>";
 
@@ -2088,7 +2171,7 @@ void createWebServer()
       for ( int i = monDelai; i >= 1; i--){
         display.clearDisplay();
         display.setTextSize(2);             // Normal 1:1 pixel scale
-        display.setCursor(42, 25);
+        display.setCursor(55, 25);
         display.print((i));// Start at top-left corner
         display.display();
         delay(1000);
@@ -2138,10 +2221,13 @@ void createWebServer()
         buffer[l] = '\0';
         value = atoi(buffer);
         sensorData[count] = value; // Populating the sensorData array
+        
         Serial.print("count : ");
         Serial.println(count);
-        Serial.print("sensorData[count] : ");
-        Serial.println(sensorData[count]);
+//        Serial.print("value : ");
+//        Serial.println(value);
+//        Serial.print("sensorData[count] : ");
+//        Serial.println(sensorData[count]);
         count++;
         
         if ( count > arrayLength ) {
@@ -2265,7 +2351,7 @@ void createWebServer()
     server.on("/erasecfg", []() {
 
       //SPIFFS.remove("/sensor.txt"); // Currently only that one file...
-      LITTLEFS.remove("/sensor.txt"); // Currently only that one file...
+      LITTLEFS.remove("/sensorData.txt"); // Currently only that one file...
       content = "{\"Success\":\"Erasing files ... hit back to continue with the config\"}";
       statusCode = 200;
       server.sendHeader("Access-Control-Allow-Origin", "*");
