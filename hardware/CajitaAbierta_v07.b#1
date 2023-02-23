@@ -20995,10 +20995,6 @@
 <text x="25.75" y="2.1" size="0.6096" layer="25">22</text>
 <text x="27.1" y="10.8" size="0.6096" layer="26" rot="MR0">V+</text>
 <text x="26.2" y="10.7" size="0.6096" layer="25">V+</text>
-<text x="20.6" y="2.275" size="0.6096" layer="25">NC</text>
-<text x="21.75" y="2.25" size="0.6096" layer="26" rot="MR0">NC</text>
-<text x="12.95" y="2.175" size="0.6096" layer="25">NC</text>
-<text x="14.1" y="2.2" size="0.6096" layer="26" rot="MR0">NC</text>
 </plain>
 <libraries>
 <library name="SparkFun-Connectors">

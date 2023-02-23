@@ -81,6 +81,9 @@ char packetBuffer[20 + 1]; //buffer to hold incoming packet
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+bool invertScreen = false;
+
 /////////////////////////////
 
 int datoL2 = 0; // Indicates state of breathing "1" or "2"
@@ -89,7 +92,6 @@ unsigned long leTemps = 0;
 unsigned long elViejoTiempo = 0;
 unsigned long intervalleEntreResp = 0;
 
-bool invertScreen = false;
 
 void begin() {
 
