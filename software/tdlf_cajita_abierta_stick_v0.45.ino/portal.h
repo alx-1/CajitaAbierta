@@ -375,7 +375,8 @@ server.on("/blowsuckcfg", []() {
     myMode = server.arg("myMode");
     Serial.print("myMode is : ");Serial.println(myMode);
     monDelai = server.arg("monDelai");
-    bpm = server.arg("bpm");
+    arrayLength = server.arg("arrayLength");
+    
     
     if(myMode == "checkedLive"){ // Torpe
       preferences.putString("myMode","live");
@@ -383,17 +384,16 @@ server.on("/blowsuckcfg", []() {
       preferences.putString("checkedLive","checked");
       preferences.putString("checkedPlay","unchecked");
       preferences.putString("checkedRecord","unchecked");
-      preferences.putString("checkedErase","unchecked");
+      //preferences.putString("checkedErase","unchecked");
     } 
     
     else if(myMode == "checkedPlay") {
       preferences.putString("myMode","playback");
       myMode = "playback";
-      Serial.println(" ??????? WTF ???????");
       preferences.putString("checkedLive","unchecked");
       preferences.putString("checkedPlay","checked");
       preferences.putString("checkedRecord","unchecked");
-      preferences.putString("checkedErase","unchecked");
+      //preferences.putString("checkedErase","unchecked");
     } 
     
     else if(myMode == "checkedRecord") {
@@ -403,22 +403,22 @@ server.on("/blowsuckcfg", []() {
       preferences.putString("checkedLive","unchecked");
       preferences.putString("checkedPlay","unchecked");
       preferences.putString("checkedRecord","checked");
-      preferences.putString("checkedErase","unchecked");
+      //preferences.putString("checkedErase","unchecked");
     } 
     
-    else if(myMode == "checkedErase") {
-      preferences.putString("myMode","erase");
-      myMode = "erase";
-      preferences.putString("checkedLive","unchecked");
-      preferences.putString("checkedPlay","unchecked");
-      preferences.putString("checkedRecord","unchecked");
-      preferences.putString("checkedErase","checked");
-    }
+//    else if(myMode == "checkedErase") {
+//      preferences.putString("myMode","erase");
+//      myMode = "erase";
+//      preferences.putString("checkedLive","unchecked");
+//      preferences.putString("checkedPlay","unchecked");
+//      preferences.putString("checkedRecord","unchecked");
+//      preferences.putString("checkedErase","checked");
+//    }
     if(monDelai != ""){
     preferences.putString("monDelai",monDelai);
     }
-    if(bpm != ""){
-    preferences.putString("bpm",bpm);
+    if(arrayLength != ""){
+    preferences.putString("arrayLength",arrayLength);
     }
     
     server.sendHeader("Access-Control-Allow-Origin", "*");

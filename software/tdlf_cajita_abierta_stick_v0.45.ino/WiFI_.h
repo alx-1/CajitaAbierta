@@ -2,6 +2,7 @@
 
 bool testWifi(void)
 {
+  displayMessage(13);
   int c = 0;
   //Serial.println("Waiting for Wifi to connect");
   while ( c < 30 ) {
@@ -13,6 +14,7 @@ bool testWifi(void)
       Serial.println(WiFi.localIP());
       return true;
     }
+    monIP = WiFi.localIP();
     delay(500);
       Serial.print("*");
     c++;

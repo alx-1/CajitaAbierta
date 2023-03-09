@@ -153,9 +153,12 @@ void displayMessage(int i){
       display.setCursor(5, 52);
       display.println("IP:");
       display.setCursor(22, 52);
-      display.println(WiFi.localIP());
+      //display.println(WiFi.localIP());
+      display.println(monIP);
+      display.setCursor(22, 72);
+      display.println("port:");
       display.display();
-      delay(10); // Pause for 20 ms
+      delay(1); // Pause for 1 ms
       break;
       
     case 3: // Short Button presses are increasing the value
@@ -216,9 +219,11 @@ void displayMessage(int i){
       display.setCursor(5, 52);
       display.println("IP:");
       display.setCursor(22, 52);
-      display.println(WiFi.localIP());
+      display.println(monIP);
+      display.setCursor(22, 72);
+      display.println("PORT");
       display.display();
-      delay(20); // Pause for 20 ms
+      delay(1); // Pause for 1 ms
      
       break;
 
@@ -251,8 +256,11 @@ void displayMessage(int i){
       display.print(F("Load Array"));// Start at top-left corner
       display.setCursor(0, 25);
       display.print(F("From File"));// Start at top-left corner
+      display.setCursor(0,48);
+      display.setTextSize(1);  
+      display.print(F("Might take a few mins"));
       display.display();
-      delay(2000);
+      // delay(2000);
       break;
 
     case 7: // Array Loaded
@@ -323,5 +331,17 @@ void displayMessage(int i){
       display.display();
       delay(2000);
       break;
+
+   case 13: // Connecting to WiFI
+      display.clearDisplay();
+      display.setTextSize(2);             // Normal 1:1 pixel scale
+      display.setCursor(0, 5);
+      display.print(F("Connecting"));// Start at top-left corner
+      display.setCursor(0, 25);
+      display.print(F("to WiFI"));// Start at top-left corner
+      display.display();
+      delay(2000);
+      break;
+      
       }
 }

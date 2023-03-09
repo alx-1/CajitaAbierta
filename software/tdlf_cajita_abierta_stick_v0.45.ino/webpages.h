@@ -355,34 +355,36 @@ void monContentMode(){
       "<form method='get' action='modeConfig'>"
       "</li><li>"
       "<p>Mode : </p>"
-      "<p>Live / Playback / Record / Erase recording </p>"
+      "<p>Live / Playback / Record</p>"
       "</li><li>"
       "<input type=\"radio\" id=\"live\" name=\"myMode\" value=\"checkedLive\" required "
       +checkedLive+
       ">"
       "<label for=\"live\">Live</label><br>"
       "</li><li>"
+      
       "<input type=\"radio\" id=\"play\" name=\"myMode\" value=\"checkedPlay\""
       +checkedPlay+
       ">"
       "<label for=\"play\">Playback</label><br>"
+      "</li><li>"
+      
       "<input type=\"radio\" id=\"rec\" name=\"myMode\" value=\"checkedRecord\""
       +checkedRecord+
       ">"
       "<label for=\"rec\">Recording</label><br>"
-      "<input type=\"radio\" id=\"erase\" name=\"myMode\" value=\"checkedErase\""
-      +checkedErase+
-      ">"
-      "<label for=\"erase\">Erase File</label><br>"
       "</li><li>"
+      
+      "</li><li>"
+      "<p></p>"
       "<label> Delay : </label>"
       "<input type ='text' name='monDelai' placeholder= "
       + monDelai +
       ">"
       "</li><li>"
-      "<label> BPM : </label>"
-      "<input type ='text' name='bpm' placeholder= "
-      + bpm +
+      "<label> arrayLength : </label>"
+      "<input type ='text' name='arrayLength' placeholder= "
+      + arrayLength +
       ">"
       "</li></ol>"
       "<INPUT type=\"submit\" value=\"save\">"

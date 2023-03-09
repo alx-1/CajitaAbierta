@@ -6,6 +6,8 @@
 #include <Preferences.h>
 Preferences preferences;
 
+IPAddress monIP(192, 168, 8, 1);
+
   // WiFI
   String ssid = "yep";
   String password;
@@ -20,11 +22,19 @@ Preferences preferences;
   String checkedRecord;
   String checkedErase;
   String monDelai;
-  String bpm;
+  String arrayLength;
 
   // For recording
   int blowValue = 0;
   int suckValue = 0;
+
+  
+  const int myArrayLength = 10000;
+  byte sensorData[myArrayLength] = {0}; // Array to store the values, intialize with 0s
+  //  byte sensorData[10] = {0}; // Array to store the values, intialize with 0s
+
+  long sensorIndex = 0; // Keep track of the values in the array
+
   
 
 #if defined Accelerometer
@@ -99,9 +109,7 @@ File fileToAppend;
 //LittleFS.format();
 
 //// Recording ////
-const int arrayLength = 1000; // 65535
-byte sensorData[arrayLength] = {0}; // Array to store the values, intialize with 0s
-long sensorIndex = 0; // Keep track of the values in the array
+//const int arrayLength = 10000; // 65535
 
 void preferencesGet(){
 
@@ -130,8 +138,16 @@ void preferencesGet(){
   Serial.print("checkedErase: ");Serial.println(checkedErase); 
   monDelai = preferences.getString("monDelai", "");
   Serial.print("monDelai: ");Serial.println(monDelai);
-  bpm = preferences.getString("bpm", "");
-  Serial.print("bpm: ");Serial.println(bpm);
+  arrayLength = preferences.getString("arrayLength", "");
+  Serial.print("arrayLength: ");Serial.println(arrayLength);
+//
+//myArrayLength = arrayLength.toInt();
+//sensorData[myArrayLength] = {0}; // Array to store the values, intialize with 0s
+//sensorData[arrayLength.toInt()] = {0}; // Array to store the values, intialize with 0s
+
+//  //  byte sensorData[10] = {0}; // Array to store the values, intialize with 0s
+//
+//  long sensorIndex = 0; // Keep track of the values in the array
 
   // Sensors
   accelX = preferences.getString("accelX","");

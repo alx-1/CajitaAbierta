@@ -10,13 +10,13 @@ void littleFSSetup(){
 //    }
 
   if (LITTLEFS.begin()){
-    Serial.println(F("Inizializing FS done."));
+    Serial.println(F("Initializing FS done."));
   }else{
     Serial.println(F("fail."));
   }
 
-  // LITTLEFS.format(); ///////////// Only do this once ///////////////////
-    
+//  LITTLEFS.format(); ///////////// Only do this once ///////////////////
+ /*  
    File file = LITTLEFS.open("/sensorData.txt", "w");
   if(!file){
        Serial.println("- failed to open file for writing");
@@ -25,11 +25,12 @@ void littleFSSetup(){
  
 if(file){
     Serial.println("Write file content!");
-    file.print("Here the test text!!");
+    file.print("77");
     file.close();
     }else{
     Serial.println("Problem on create file!");
   }
+*/
 
 }
 
@@ -41,63 +42,47 @@ void readArrayFromFile(){ // Open file, save it into the array and start going t
       Serial.println("- failed to open file for reading");
       return;
     }
-    Serial.println(filetoRead.size());
-//    
-//    if(LITTLEFS.exists("/sensorData.txt"){
-//      Serial.print("sensorData exists, size : "); 
-//      }
+    // Serial.println(filetoRead.size());  
+    // if(LITTLEFS.exists("/sensorData.txt"){
+    // Serial.print("sensorData exists, size : "); 
+    // }
     Serial.println("- read from file:");
-      
-//     int count = 0;
-//      while(filetoRead.available()){
-//        Serial.write(filetoRead.read());
-//        int grr = atoi(filetoRead.read()); // - '48';;
-//        sensorData[count] = sensorData[grr];
-//        count++;
-//        }
-//        filetoRead.close();
-//      
+    
     sensorIndex = 0;
     char buffer[6]; // 6
-    String stringOne = "";    
     int value;
-    Serial.println("Getting here ! ");
 
     while(filetoRead.available()){
       int l = filetoRead.readBytesUntil('\n', buffer, sizeof(buffer)-1);
       buffer[l] = '\0';
       value = atoi(buffer);
       sensorData[sensorIndex] = value; // Populating the sensorData array
-      Serial.print("sensorData[");Serial.print(sensorIndex);Serial.print("] : ");Serial.println(sensorData[sensorIndex]);
-      //stringOne = String(buffer); // converting a constant char buffer into a String
-      //value = stringOne.toInt();
-
-//          if (value >= 0){
-//            //Serial.print("value : ");
-//            //Serial.println(value);
-//          }
-         
-    sensorIndex++;
-    if ( sensorIndex > arrayLength ) {
-      break;    
-    }
- }
-            
-    filetoRead.close();
-    displayMessage(7);
- }
+      delay(2);
+      //Serial.print("value : ");Serial.println(value);
+      sensorIndex++;
+      }
+      filetoRead.close();
+      displayMessage(7);
+}
 
  void writeToFile() {
    Serial.println("Writing to file");
    displayMessage(8); // "writing to file"
+
+   // First erase previous file
+   LITTLEFS.remove("/sensorData.txt"); 
+   
    File fileToAppend = LITTLEFS.open("/sensorData.txt", "a");       // open file
       
-      for ( int i = 0 ; i < arrayLength; i++){ // Change this back to 65535  
+      // for ( int i = 0 ; i < arrayLength; i++){ // Change this back to 65535  
+      for ( int i = 0 ; i < myArrayLength; i++){ // Change this back to 65535  
+
           fileToAppend.println(sensorData[i]);
-          delay(5);
+          //fileToAppend.println("42");
+          delay(1);
           Serial.print("Writing, ");Serial.print("sensorData[");Serial.print(i);Serial.print("] : ");Serial.println(sensorData[i]);
-          fileToAppend.println(i);
-          fileToAppend.print(',');   
+          //fileToAppend.println(i); // This would write the line number
+          //fileToAppend.print(',');   
       }   
       fileToAppend.close(); 
  }

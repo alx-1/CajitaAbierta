@@ -10,9 +10,9 @@ bool portalStart = false;
 #include "params.h"
 #include "analogSensors.h"
 #include "accelerometer.h"
-#include "WiFI_.h"
 #include "button.h"
 #include "display.h"
+#include "WiFI_.h"
 #include "portal.h"
 #include "record_play.h"
 //// For a PWM to the LEDPIN on the nodeMCU ESP32
@@ -122,6 +122,7 @@ void loop() {
     } else if (myMode == "playback"){
 
       if((WiFi.status() == WL_CONNECTED)) {
+        monIP = WiFi.localIP();
         if (portalStart){
           Serial.println("Starting portal");
           startPortal();
@@ -151,16 +152,18 @@ void loop() {
         }
        #endif
        sensorIndex = sensorIndex+12;
-       if(sensorIndex > arrayLength){
+       if(sensorIndex > myArrayLength){
         sensorIndex = 0; // reset
        }
-       while ((millis() - startMillis) < period);      //waits until period done
-       } else {
+      } else {
         serverListen();
         }
     } else if (myMode == "record"){
+      // Do we have the 'all done' from the web interface?
+      // if (webOK == true){
+      sensorIndex = 0;
 
-      while(sensorIndex < arrayLength){
+      while(sensorIndex < myArrayLength){
         //  record : don't start wifi, check sensors, populate array , then save to file, then reboot into play mode
         Serial.print("Recording, ");Serial.print("sensorIndex : ");Serial.println(sensorIndex);
         #if defined Accelerometer
@@ -186,7 +189,7 @@ void loop() {
        while ((millis() - startMillis) < period);      //waits until period done
        
        // Recording /// Get the values in an array !  Get ax, ay, az, x, y, z, blow, suck, s1, s2, s3, s4 into that thing
-
+       
        for ( int i = 0; i <12; i++ ) { 
         switch(i){
         case 0: sensorData[i+sensorIndex] = aIntX; break; 
@@ -213,5 +216,8 @@ void loop() {
      preferences.putString("checkedRecord","unchecked");
      preferences.putString("checkedErase","unchecked");
      ESP.restart();
-     }
+     } else {
+      serverListen();
+      }
+    //} Fin Webok conditions
 }

@@ -147,16 +147,22 @@ void playbackAccelerometer(){
    if ( accelX == "checked"|| accelY == "checked" || accelZ == "checked" || pan_ == "checked" || tilt_ == "checked" || roll_ == "checked"){
         // play it back from memory
         aIntX = sensorData[sensorIndex];  // fill in the values from the sensorData array : " );
-        Serial.print("Playback, ");Serial.print("sensorIndex : "); Serial.println(sensorIndex);
+        // Serial.print("Playback, ");Serial.print("sensorIndex aIntX : "); Serial.print(sensorIndex);Serial.print(" value = ");Serial.println(sensorData[sensorIndex]);
         aIntY = sensorData[sensorIndex+1];
         //Serial.print("aIntY err : " );
         //Serial.println(aIntY);
         aIntZ = sensorData[sensorIndex+2];
         //Serial.print("aIntZ err: " );
         //Serial.println(aIntZ);
-        x = sensorData[sensorIndex+3];  
+        x = sensorData[sensorIndex+3]; 
+           //     Serial.print("Playback, ");Serial.print("sensorIndex + 3 X : "); Serial.print(sensorIndex+3);Serial.print(" value = ");Serial.println(sensorData[sensorIndex+3]);
+ 
         y = sensorData[sensorIndex+4];
+           //     Serial.print("Playback, ");Serial.print("sensorIndex + 4 Y : "); Serial.print(sensorIndex+4);Serial.print(" value = ");Serial.println(sensorData[sensorIndex+4]);
+
         z = sensorData[sensorIndex+5];
+            //    Serial.print("Playback, ");Serial.print("sensorIndex + 5 Z : "); Serial.print(sensorIndex+5);Serial.print(" value = ");Serial.println(sensorData[sensorIndex+5]);
+
       }
 }
 

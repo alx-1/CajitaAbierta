@@ -42,11 +42,12 @@ void sendOSCMidi(){
           midi[1] = int(sensor2Value);   
         }
     midi[2] = (preferences.getString(mesKeys[i+2].c_str())).toInt(); // CC value
-    midi[3] = 0;     // Extra   
+    midi[3] = 0;     // Extra  
+    oscUdp.sendMessage("/midi",  "m",  midi); // send to Udp server
+    delay(2);
     }
     
-    oscUdp.sendMessage("/midi",  "m",  midi); // send to Udp server
-    delay(20);
+ 
   }
   // hard coded for testing
   // midi[0] = 6;      // midi channel // 90 + midi channel (note on)
