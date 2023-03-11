@@ -74,7 +74,9 @@ void startPortal(){
   portalScanNetworks();
   preferencesGet();
   monContentHome(); // Try to update with the latest values
+  #if defined Accelerometer
   monContentAccel();
+  #endif
   #if defined PressureSensor
   monContentBreath();
   #endif
@@ -103,7 +105,7 @@ void startPortal(){
   server.send(200, "text/html", firmwareHTML);    
   });
 
-  
+  #if defined Accelerometer
   server.on("/accelcfg", []() {
     
     // AccelX // check // channel // CC message
@@ -237,6 +239,7 @@ void startPortal(){
     // ok get this to do stg useful
    
   });
+  #endif
 
 #if defined PressureSensor
 server.on("/blowsuckcfg", []() {

@@ -150,6 +150,7 @@ void preferencesGet(){
 //  long sensorIndex = 0; // Keep track of the values in the array
 
   // Sensors
+  #if defined Accelerometer
   accelX = preferences.getString("accelX","");
   //Serial.print("accelX: ");Serial.println(accelX);
   if (accelX == "checked"){
@@ -194,6 +195,7 @@ void preferencesGet(){
   //Serial.print("rollChan : ");Serial.println(rollChan);
   rollCC = preferences.getString("rollCC","");
   //Serial.print("rollCC : ");Serial.println(rollCC);
+  #endif
 
 #if defined PressureSensor
   expire = preferences.getString("expire","");

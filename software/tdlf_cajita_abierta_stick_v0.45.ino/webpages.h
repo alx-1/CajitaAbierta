@@ -100,7 +100,7 @@ void monContentHome(){
  
  
 /////// Accelerometer ////////
-
+#if defined Accelerometer
 void monContentAccel(){
   contentAccel = ""
       
@@ -225,6 +225,7 @@ void monContentAccel(){
     
     //// Fin HTML Accelerometer
   }
+#endif
 
 //// Breath sensor 
 #if defined PressureSensor
@@ -233,7 +234,9 @@ void monContentBreath(){
     "<center><b>Blow / Suck</b></center><br>"
     "<b><center>"
     " <a href = \"/\"> WiFI </a>"
+    #if defined Acclerometer
     " / <a href = \"accel.html\"> Accelerometer </a>"
+    #endif
     " / <a href = \"sensors.html\"> Sensors </a>"
     " / <a href = \"mode.html\"> Mode </a>"
     " / <a href = \"firmware.html\"> Firmware </a>"

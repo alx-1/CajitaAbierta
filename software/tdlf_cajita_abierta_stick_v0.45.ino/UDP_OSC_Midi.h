@@ -16,7 +16,8 @@ void sendOSCMidi(){
     if (preferences.getString(mesKeys[i].c_str()) == "checked"){
     
       midi[0] = (preferences.getString(mesKeys[i+1].c_str())).toInt(); // Midi Channel value
-        if (mesKeys[i] == "accelX"){
+        #if defined PressureSensor
+          if (mesKeys[i] == "accelX"){
           midi[1] = aIntX; 
           } else if (mesKeys[i] == "accelY"){
           midi[1] = aIntY;   
@@ -29,14 +30,15 @@ void sendOSCMidi(){
           }else if (mesKeys[i] == "roll_"){
           midi[1] = z; 
           }
+          #endif
           #if defined PressureSensor
-          else if (mesKeys[i] == "expire"){
+          if (mesKeys[i] == "expire"){
           midi[1] = int(blowValue);   
           } else if (mesKeys[i] == "inspire"){
           midi[1] = int(suckValue); 
           }
           #endif  
-          else if (mesKeys[i] == "sensor1"){
+          if (mesKeys[i] == "sensor1"){
           midi[1] = int(sensor1Value);   
           } else if (mesKeys[i] == "sensor2"){
           midi[1] = int(sensor2Value);   

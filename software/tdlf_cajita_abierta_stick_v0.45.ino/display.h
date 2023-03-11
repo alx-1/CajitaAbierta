@@ -23,7 +23,9 @@ display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   }
   // Show initial display buffer contents on the screen --
   // the library initializes this with an Adafruit splash screen.
-  display.setRotation(2);
+  #if defined displayRotate
+  display.setRotation(0);
+  #endif
   display.clearDisplay();
   display.setTextSize(1);             // Normal 1:1 pixel scale
   display.setTextColor(WHITE);        // Draw white text
@@ -184,6 +186,7 @@ void displayMessage(int i){
 
         display.setCursor(0, 34);
         display.print(F("value"));
+        #if defined Accelerometer
         display.setCursor(80, 34);
         if (mesKeys[buttonCounter] == "accelX"){
         display.println(aIntX); 
@@ -198,14 +201,17 @@ void displayMessage(int i){
         }else if (mesKeys[buttonCounter] == "roll_"){
         display.println(z); 
         }
+        #endif
+        
         #if defined PressureSensor
         else if (mesKeys[buttonCounter] == "expire"){
         display.println(int(blowValue));   
         } else if (mesKeys[buttonCounter] == "inspire"){
         display.println(int(suckValue)); 
         }
-        #endif  
-        else if (mesKeys[buttonCounter] == "sensor1"){
+        #endif 
+         
+        if (mesKeys[buttonCounter] == "sensor1"){
         display.println(int(sensor1Value));   
         } else if (mesKeys[buttonCounter] == "sensor2"){
         display.println(int(sensor2Value));   

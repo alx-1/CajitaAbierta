@@ -51,7 +51,7 @@ void setup() {
       displayMessage(11);
       }
     
-    if(myMode == "live" || myMode == "playback"){  // myMode = live, playback, record
+    if(myMode == "live" || myMode == "playback" || myMode ==""){  // myMode = live, playback, record
       //    live : start wifi, start osc, check sensors, send according to the bpm  
       //    playback : start wifi, populate array from file, start osc, send according to the bpm 
       Serial.println(ssid.c_str());
@@ -85,7 +85,7 @@ void loop() {
 
     // myMode = live, playback, record
     
-    if(myMode == "live"){  
+    if(myMode == "live" || myMode ==""){  
 
       if((WiFi.status() == WL_CONNECTED)) {
         if (portalStart){
@@ -192,14 +192,18 @@ void loop() {
        
        for ( int i = 0; i <12; i++ ) { 
         switch(i){
+        #if defined Accelerometer
         case 0: sensorData[i+sensorIndex] = aIntX; break; 
         case 1: sensorData[i+sensorIndex] = aIntY; break;
         case 2: sensorData[i+sensorIndex] = aIntZ; break;
         case 3: sensorData[i+sensorIndex] = x; break;
         case 4: sensorData[i+sensorIndex] = y; break;
         case 5: sensorData[i+sensorIndex] = z; break;
+        #endif
+        #if  defined PressureSensor
         case 6: sensorData[i+sensorIndex] = blowValue; break;
         case 7: sensorData[i+sensorIndex] = suckValue; break;
+        #endif
         case 8: sensorData[i+sensorIndex] = sensor1Value; break;
         case 9: sensorData[i+sensorIndex] = sensor2Value; break;
         case 10: sensorData[i+sensorIndex] = sensor3Value; break;
