@@ -344,14 +344,25 @@ server.on("/blowsuckcfg", []() {
     if(password != ""){
     preferences.putString("password",password);
     }
+    
     OSCServer = server.arg("OSCServer");
+    Serial.print("OSCServer : ");Serial.println(OSCServer);
     if (OSCServer == "checkedTDLF"){
       preferences.putString("checkedTDLF","checked");
-      preferences.putString("checkedTouchOSC","unchecked");
-      }else{
-      preferences.putString("checkedTDLF","unchecked");
-      preferences.putString("checkedTouchOSC","checked");
-    }
+      preferences.putString("checkedTOSCB","unchecked");
+      preferences.putString("checkedOSC","unchecked");
+      } else if (OSCServer == "checkedTOSCB"){
+        preferences.putString("checkedTDLF","unchecked");
+        preferences.putString("checkedTOSCB","checked");
+        preferences.putString("checkedOSC","unchecked");
+      } else if (OSCServer == "checkedOSC"){
+        Serial.println("yes it is !!!!");
+        preferences.putString("checkedTDLF","unchecked");
+        preferences.putString("checkedTOSCB","unchecked");
+        preferences.getString("checkedTOSCB","not set");
+        Serial.println(preferences.getString("checkedTOSCB"));
+        preferences.putString("checkedOSC","checked");
+        }
 
     server.sendHeader("Access-Control-Allow-Origin", "*");
     server.send(200, "text/html", contentHeadStyle+contentReboot);

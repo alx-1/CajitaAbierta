@@ -70,11 +70,14 @@ void setup() {
           delay(1000);
         }
       }
-    
-      browseService("touchoscbridge", "udp");
-      browseService("osc", "udp"); // _osc._udp
-      //browseService("_osc", "_udp"); // _osc._udp
-      //browseService("tdlf", "udp"); //  
+
+      if(checkedTOSCB == "checked"){
+        browseService("touchoscbridge", "udp");  
+      } else if(checkedTDLF == "checked"){ 
+        browseService("tdlf", "udp");   
+      } else if(checkedOSC == "checked"){ 
+        browseService("osc", "udp"); // _osc._udp // like chataigne
+      }
       
       } else if (myMode == "formatFS"){
         // formatFS : don't start wifi, just reformat the File System and reboot in live mode

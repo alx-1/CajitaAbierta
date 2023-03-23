@@ -45,17 +45,18 @@ void sendOSCMidi(){
     midi[2] = (preferences.getString(mesKeys[i+2].c_str())).toInt(); // CC value
     midi[3] = 0;     // Extra  
 
-    if (MDNS.hostname(0) == "tdlf-mdns"){
-      Serial.println("sending to tdlf");
+   if (checkedTDLF == "checked"){
+      // Serial.println("sending to tdlf");
       oscUdp.sendMessage("/midi",  "m",  midi); // send to tdlf server
-      } else {
+      } else if (checkedTOSCB == "checked" || checkedOSC == "checked"){
         oscUdp.sendMessage("/midi/", "i", midi[1]); // send to Udp server, such as chataigne
       }
+     
     
     //int monInt = random(42);
     //oscUdp.sendMessage("/midi/sensor1", "i", monInt); // send to Udp server
 
-    delay(1); // delay(2)
+    // delay(1); // delay(2)
     }
   }
   // hard coded for testing

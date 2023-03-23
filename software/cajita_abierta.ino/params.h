@@ -12,8 +12,9 @@ IPAddress monIP(192, 168, 8, 1);
   String ssid = "yep";
   String password;
   String OSCServer;
+  String checkedTOSCB; // TouchOSCBridge
   String checkedTDLF;
-  String checkedTouchOSC;
+  String checkedOSC;
 
   // Mode
   String myMode;
@@ -119,8 +120,10 @@ void preferencesGet(){
   
   checkedTDLF = preferences.getString("checkedTDLF", "not set yet");
   Serial.print("checkedTDLF: ");Serial.println(checkedTDLF);
-  checkedTouchOSC = preferences.getString("checkedTouchOSC", "not set yet");
-  Serial.print("checkedTouchOSC: ");Serial.println(checkedTouchOSC);
+  checkedTOSCB = preferences.getString("checkedTOSCB", "not set yet");
+  Serial.print("checkedTOSCB--------: ");Serial.println(checkedTOSCB);
+  checkedOSC = preferences.getString("checkedOSC", "not set yet");
+  Serial.print("checkedOSC: ");Serial.println(checkedOSC);
 
   // Mode
   myMode = preferences.getString("myMode", "");

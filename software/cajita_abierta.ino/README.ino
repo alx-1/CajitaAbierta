@@ -7,11 +7,12 @@
 // * See License file
 
 // HARDWARE REQUIREMENTS
-// ==================
+// =====================
 // ESP32 board (Tested on Node32s)
 // The sensors you want, the accelerometer is based on a ADXL345 
 
-// LIBRAIRIES TO INSTALL : 
+// LIBRAIRIES TO INSTALL 
+// ===================== 
 // Polyfill analogWrite By ERROPiX v.0.1.0
 // Seeed Studio's ADXL345 v 1.0.0
 // Adafruit's GFX v. 1.10.12
@@ -22,3 +23,12 @@
 
 // Used Library
 // Preferences (built in, you don't need to insall it)
+
+// TODO
+// ====
+
+// * improve .bin upload interface
+// * fix bug Sensor1 preferences saving
+// (done) * actually select udp destination (tdlf, chataigne, touchoscbridge) sending based on the user's choice
+// * produce guide for how to use with hydra
+// * update webpage with Maria Paula Lonegro's example

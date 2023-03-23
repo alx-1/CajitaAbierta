@@ -86,14 +86,22 @@ void monContentHome(){
 
     //"<form method='get' action='OSCServer'>"
     "<p>Sensor output goes to : </p>"
-    "<input type=\"radio\" id=\"TDLF\" name=\"OSCServer\" value=\"checkedTDLF\" required "
+    
+    "<input type=\"radio\" id=\"OSC1\" name=\"OSCServer\" value=\"checkedTOSCB\" required "
+    +checkedTOSCB+
+    ">"
+    "<label for=\"OSC1\">TouchOSCBridge</label><br>"
+    
+    "<input type=\"radio\" id=\"TDLF\" name=\"OSCServer\" value=\"checkedTDLF\" "
     +checkedTDLF+
     ">"
     "<label for=\"TDLF\">TDLF</label><br>"
-    "<input type=\"radio\" id=\"OSC\" name=\"OSCServer\" value=\"checkedTouchOSC\" "
-    +checkedTouchOSC+
+    
+    "<input type=\"radio\" id=\"OSC2\" name=\"OSCServer\" value=\"checkedOSC\" "
+    +checkedOSC+
     ">"
-    "<label for=\"OSC\">TouchOSC</label><br>"
+    "<label for=\"OSC2\">OSC</label><br>"
+    
     "<INPUT type=\"submit\" value=\"submit\">"    
     "</form></body></html>";
   }
