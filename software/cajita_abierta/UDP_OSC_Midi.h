@@ -97,3 +97,7 @@ void browseService(const char * service, const char * proto){
         oscServerFound = true; 
       }
 }
+
+//void minMaxSetting(int i){
+//  // Yes we're ranging
+//}

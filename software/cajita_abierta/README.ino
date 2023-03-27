@@ -1,4 +1,4 @@
-// CajitaAbierta v.0.46
+// CajitaAbierta v.0.47
 // UDP OSC MIDi Sensor board
 // * mdns discovery for negociating UDP sending port
 // * configuration through captive portal 
@@ -19,16 +19,21 @@
 // Adafruit's SSD1306 v. 2.4.6
 // Tof's MicroOSCUDP (distributed with this archive)
 // LittleFS_esp32 by lorol 1.0.6
-// ElegantOTA 2.2.9
+// AsyncElegantOTA 2.2.?
+// EspAsyncWebServer (distributed with this archive)
 
 // Used Library
-// Preferences (built in, you don't need to insall it)
+// Preferences (built in, you don't need to install it)
 
 // TODO
 // ====
 
-// * improve .bin upload interface
-// * fix bug Sensor1 preferences saving
+// (done) * improve .bin upload interface
+// (done) * fix bug Sensor1 preferences saving
 // (done) * actually select udp destination (tdlf, chataigne, touchoscbridge) sending based on the user's choice
+// (done) * switch to asynchronous mode to enable ranging via the captive portal
+// * add choice for data format or osc
+// * run performances check (how many readings per second make it to the instruments)
+// * have a ranging routine for mapping of the sensor data 
 // * produce guide for how to use with hydra
 // * update webpage with Maria Paula Lonegro's example

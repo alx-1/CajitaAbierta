@@ -32,10 +32,9 @@ IPAddress monIP(192, 168, 8, 1);
   const int myArrayLength = 5000;  // 75500 max tested
   byte sensorData[myArrayLength] = {0}; // Array to store the values, intialize with 0s
   //  byte sensorData[10] = {0}; // Array to store the values, intialize with 0s
-
   long sensorIndex = 0; // Keep track of the values in the array
+  bool minMaxToBeSet = false; // A true value and a long press will call the min max routine 
 
- 
 #if defined Accelerometer
   String accelX;
   String accelXChan;
@@ -71,8 +70,11 @@ IPAddress monIP(192, 168, 8, 1);
     
 #if defined useAnalogSensors
   String sensor1;
+  String sensor1Min;
+  String sensor1Max;
   String sensor1Chan;
   String sensor1CC;
+  String sensor1Cal;
   String sensor2;
   String sensor2Chan;
   String sensor2CC;
@@ -121,7 +123,7 @@ void preferencesGet(){
   checkedTDLF = preferences.getString("checkedTDLF", "not set yet");
   Serial.print("checkedTDLF: ");Serial.println(checkedTDLF);
   checkedTOSCB = preferences.getString("checkedTOSCB", "not set yet");
-  Serial.print("checkedTOSCB--------: ");Serial.println(checkedTOSCB);
+  Serial.print("checkedTOSCB: ");Serial.println(checkedTOSCB);
   checkedOSC = preferences.getString("checkedOSC", "not set yet");
   Serial.print("checkedOSC: ");Serial.println(checkedOSC);
 
@@ -129,14 +131,14 @@ void preferencesGet(){
   myMode = preferences.getString("myMode", "");
   Serial.print("myMode: ");Serial.println(myMode);
   checkedLive = preferences.getString("checkedLive", "");
-  Serial.print("checkedLive: ");Serial.println(checkedLive); 
+  //Serial.print("checkedLive: ");Serial.println(checkedLive); 
   checkedPlay = preferences.getString("checkedPlay", "");
-  Serial.print("checkedPlay: ");Serial.println(checkedPlay);   
+  //Serial.print("checkedPlay: ");Serial.println(checkedPlay);   
   checkedRecord = preferences.getString("checkedRecord", "");
-  Serial.print("checkedRecord: ");Serial.println(checkedRecord); 
+  //Serial.print("checkedRecord: ");Serial.println(checkedRecord); 
   
   checkedFormatFS = preferences.getString("checkedFormatFS", "");
-  Serial.print("checkedFormatFS: ");Serial.println(checkedFormatFS); 
+  //Serial.print("checkedFormatFS: ");Serial.println(checkedFormatFS); 
   
   monDelai = preferences.getString("monDelai", "");
   Serial.print("monDelai: ");Serial.println(monDelai);
@@ -217,9 +219,9 @@ void preferencesGet(){
 #endif
   sensor1 = preferences.getString("sensor1","");
   //Serial.print("sensor1: ");Serial.println(sensor1);
-  sensor1Chan = preferences.getString("Sensor1Chan","");
+  sensor1Chan = preferences.getString("sensor1Chan","not set");
   //Serial.print("sensor1Chan: ");Serial.println(sensor1Chan);
-  sensor1CC= preferences.getString("Sensor1CC","");
+  sensor1CC= preferences.getString("sensor1CC","not set");
   //Serial.print("sensor1CC: ");Serial.println(sensor1CC);
 
   sensor2 = preferences.getString("sensor2","");

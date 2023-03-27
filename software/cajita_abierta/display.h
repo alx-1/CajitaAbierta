@@ -177,13 +177,38 @@ void displayMessage(int i, int j){
       }
       display.setTextSize(2);             // Normal 1:1 pixel scale
       display.setTextColor(WHITE);        // Draw white text
+       
+//      if (j == 0){
+//        if (preferences.getString(mesKeys[buttonCounter].c_str()) == "checked"){
+//          display.setTextSize(2); 
+//          display.setCursor(0, 0);
+//          display.println(mesKeys[buttonCounter]); // sensor1, sensor2...etc
+//          }
+//      } else if (j == 1){
+//        if (preferences.getString(mesKeys[buttonCounter].c_str()) == "checked"){
+//          display.setTextSize(1); 
+//          display.setCursor(0, 0);
+//          display.print(F("Recording"));
+//          display.setCursor(36, 0);
+//          display.println(mesKeys[buttonCounter]); // sensor1, sensor2...etc
+//          }
+//     } 
 
-      // Serial.print("mesKeys[buttonCounter].c_str() "); Serial.println(mesKeys[buttonCounter].c_str());
+//      else if (j == 3){
+//        if (preferences.getString(mesKeys[buttonCounter].c_str()) == "checked"){
+//          display.setTextSize(1); 
+//          display.setCursor(0, 0);
+//          display.print(F("Calibrating"));
+//          display.setCursor(36, 0);
+//          display.println(mesKeys[buttonCounter]); // sensor1, sensor2...etc
+//          }
+//      }
 
       if (preferences.getString(mesKeys[buttonCounter].c_str()) == "checked"){
-        display.setCursor(0, 0);
-        display.println(mesKeys[buttonCounter]);
-        
+
+      //if (j == 0 || j == 1){
+        display.setTextSize(2);            
+        // Serial.print("mesKeys[buttonCounter].c_str() "); Serial.println(mesKeys[buttonCounter].c_str());
         display.setCursor(0, 17);
         display.print(F("ch"));
         display.setCursor(26, 17);
@@ -240,7 +265,6 @@ void displayMessage(int i, int j){
       display.println("PORT");
       display.display();
       //delay(1); // Pause for 1 ms
-     
       break;
 
     case 4: // recording 

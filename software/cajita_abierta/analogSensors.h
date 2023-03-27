@@ -12,6 +12,7 @@ void readSensors(){  // check the sensors here
       sensor1Value = analogRead(32); // R3 // 32
       Serial.print("sensor1Value : ");Serial.println(sensor1Value);
       sensor1Value = map(sensor1Value,0,3000,0,127);
+      //sensor1Value = map(sensor1Value,sensor1Min.toInt(),sensor1Max.toInt,0,127);
       Serial.print("despues de map : ");Serial.println(sensor1Value);
       }
     if ( sensor2 == "checked"){

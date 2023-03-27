@@ -121,7 +121,8 @@ void loop() {
       if(buttonCounter == 0){
         displayMessage(2,0); // Overall sensors 
         }else{
-        displayMessage(3,0); // Single sensor
+        displayMessage(3,0); // Single sensor display 
+        minMaxToBeSet = true; // In this mode, a long press will enter the calibration of the sensor
         }
        #endif
        while ((millis() - startMillis) < period);      //waits until period done

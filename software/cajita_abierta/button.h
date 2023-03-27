@@ -46,10 +46,13 @@ void getButtonState(){
       if (firstimer){ // do nothing
        firstimer = false;
       }
-      else{
+//      else if (minMaxToBeSet){
+//      Serial.println("A long press is detected while in focus mode, starting mixMaxRoutine");
+//      //minMaxSetting(); // Need to pass which sensor we're at!
+//      
+      } else {
       Serial.println("A long press is detected");
       portalStart = "true"; 
-      }
     }
   }
 
