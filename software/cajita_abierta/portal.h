@@ -96,6 +96,7 @@ void startPortal(){
 
   portalScanNetworks();
   preferencesGet();
+  monContentHTMLScript();
   monContentHome(); // Try to update with the latest values
   #if defined Accelerometer
   monContentAccel();
@@ -344,9 +345,7 @@ void startPortal(){
       if(sensor1Cal != ""){
         preferences.putString("sensor1Cal",sensor1Cal);
         }
-      
-      // maybe we calibrate now...no checking of whatever ?!
-      
+            
       if ( sensor2 == "on" ){ sensor2 = "checked"; } else { sensor2 = "unchecked"; }
       if(sensor2!= preferences.getString("sensor2")){
       preferences.putString("sensor2",sensor2);
@@ -361,21 +360,38 @@ void startPortal(){
       if(sensor2Chan != ""){
       preferences.putString("sensor2Chan",sensor2Chan);
       }
-
-//      if (preferences.getString(sensor1Cal == "calibrate"){
-//        Serial.println("We calibrate that sensor");
-//        ////*server.sendHeader("Access-Control-Allow-Origin", "*");
-//        //server.send(200, "text/html", contentHeadStyle+contentScript+contentHTMLScript);
-//      } else {
-        request->send(200, "text/html", contentHeadStyle+contentReboot);
-        //}
+      
+      request->send(200, "text/html", contentHeadStyle+contentReboot);
+        
      }); // Fin sensorscfg
 
     server.on("/calibrate", HTTP_GET, [](AsyncWebServerRequest *request){ 
       //if (preferences.getString(sensor1Cal == "calibrate"){
-      Serial.println("We calibrate that sensor");
-      request->send(200, "text/html", contentHeadStyle+contentScript+contentHTMLScript);
+      Serial.println("Calibrating sensors"); // which sensors?
+      minMaxCalibration = true;
+
+      request->send(200, "text/html", contentHeadStyle+contentHTMLScript+contentScript);
       }); // Fin calibrate
+
+    server.on("/filters", HTTP_GET, [](AsyncWebServerRequest *request){ 
+      Serial.println("Enabling filters"); // which sensors?
+      int params = request->params();
+      for(int i=0;i<params;i++){
+        AsyncWebParameter* p = request->getParam(i);
+        if (p->name() == "s1EMAFilter"){s1EMAFilter = p->value().c_str();}
+        Serial.printf("_GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
+        }
+      if ( s1EMAFilter == "on" ){ s1EMAFilter = "checked"; } else { s1EMAFilter = "unchecked"; }
+      if(s1EMAFilter != preferences.getString("s1EMAFilter")){
+        preferences.putString("s1EMAFilter",s1EMAFilter);
+        Serial.print("writing s1EMAFilter : ");Serial.println(s1EMAFilter);
+        s1EMAFilter = preferences.getString("s1EMAFilter","grr");
+        Serial.print("reading s1EMAFilter : ");Serial.println(s1EMAFilter); 
+        }
+      request->send(200, "text/html", contentHeadStyle+contentHTMLScript+contentScript);
+      }); // Fin calibrate
+
+      
 
   server.on("/wificfg", HTTP_GET, [](AsyncWebServerRequest *request){ 
 
@@ -488,6 +504,7 @@ void startPortal(){
     // and set reconnect delay to 1 second
     client->send("hello!", NULL, millis(), 10000);
   });
+  
   server.addHandler(&events);
   
   server.begin();

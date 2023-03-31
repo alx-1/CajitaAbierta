@@ -52,11 +52,8 @@ void sendOSCMidi(){
         oscUdp.sendMessage("/midi/", "i", midi[1]); // send to Udp server, such as chataigne
       }
      
-    
     //int monInt = random(42);
     //oscUdp.sendMessage("/midi/sensor1", "i", monInt); // send to Udp server
-
-    // delay(1); // delay(2)
     }
   }
   // hard coded for testing
@@ -97,7 +94,3 @@ void browseService(const char * service, const char * proto){
         oscServerFound = true; 
       }
 }
-
-//void minMaxSetting(int i){
-//  // Yes we're ranging
-//}

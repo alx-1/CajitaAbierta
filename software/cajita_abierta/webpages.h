@@ -3,28 +3,74 @@ String contentAccel;
 String contentBreath;
 String contentSensors;
 String contentMode;
+String contentHTMLScript;
+
+void monContentHTMLScript(){
+  
+  contentHTMLScript = ""
+
+  "<body>"
+  "<canvas id=\"myCanvas\" width=\"250\" height=\"250\" style=\"border:1px solid grey\"></canvas>"
+  "<p></p>"
+    "<form method='get' action='filters'>"
+    "<input type=\"checkbox\" id=\"s1EMAFilter\" name=\"s1EMAFilter\""
+    +s1EMAFilter+
+    ">"
+    "<label for=\"s1EMAFilter\">EMAFilter</label><br>"
+    "<INPUT type=\"submit\" value=\"save filter settings\">"
+    "</form></body></html>";
+}
 
 String contentScript = ""
 // Get current sensor readings when the page loads  
 "<script>"
-"window.addEventListener('load', getReadings);"
+"let myData = 42;"
+"let offset = 25;"
+"let myValues = [];"
+"let counter = 0;"
+
+/*"window.addEventListener('load', getReadings);"
 
 // Function to get current readings on the webpage when it loads for the first time
-//"function getReadings(){"
-//  "var xhr = new XMLHttpRequest();"
-//  "xhr.onreadystatechange = function() {"
-//    "if (this.readyState == 4 && this.status == 200) {"
-//      "var myObj = JSON.parse(this.responseText);"
-//      "console.log(myObj);"
-//      "var temp = myObj.temperature;"
-//      "var hum = myObj.humidity;"
-//      "gaugeTemp.value = temp;"
-//      "gaugeHum.value = hum;"
-//    "}"
-//  "};"
-//  "xhr.open(\"GET\", \"/readings\", true);"
-//  "xhr.send();"
-//"}"
+"function getReadings(){"
+  "var xhr = new XMLHttpRequest();"
+  "xhr.onreadystatechange = function() {"
+    "if (this.readyState == 4 && this.status == 200) {"
+      "var myObj = JSON.parse(this.responseText);"
+      "console.log(myObj);"
+      //"var temp = myObj.temperature;"
+      //"var hum = myObj.humidity;"
+      //"gaugeTemp.value = temp;"
+      //"gaugeHum.value = hum;"
+    "}"
+  "};"
+  "xhr.open(\"GET\", \"/readings\", true);"
+  "xhr.send();"
+"}"*/
+
+"function showSensor(data){"
+  "const canvas = document.getElementById(\"myCanvas\");"
+  "const ctx = canvas.getContext(\"2d\");"
+  //"ctx.style.position = 'absolute';"
+  //"ctx.style.top = '10px';"
+  //"ctx.style.left = '50px';"
+  "ctx.font = \"16px Arial\";"
+  "ctx.clearRect(0,0,canvas.width,canvas.height);"
+  "let myObj = JSON.parse(data);"
+  "myValues[counter] = myObj.sensor1Value;"
+  "ctx.beginPath();"
+  "for(i=0;i<200;i++){"
+      "ctx.arc(offset+i, (myValues[i]/-25)+175, 1, 0, 2 * Math.PI);"
+  "}"
+  "ctx.stroke();"
+  "ctx.fillText(\"sensor1Value: \", 25, 200);"
+  "ctx.fillText(myObj.sensor1Value, 150, 200);"
+  "ctx.fillText(\"max: \", 25, 218);"
+  "ctx.fillText(myObj.myMax, 150, 218);"
+  "ctx.fillText(\"min: \", 25, 236);"
+  "ctx.fillText(myObj.myMin, 150, 236);"
+  
+"}"
 
 "if (!!window.EventSource) {"
  " var source = new EventSource('/events');"
@@ -41,23 +87,25 @@ String contentScript = ""
   
   "source.addEventListener('message', function(e) {"
     "console.log(\"message\", e.data);"
+    "showSensor(e.data);"
+    "var myObj = JSON.parse(e.data);"
+    "console.log(myObj);"
+    "counter++;"
+    "if (counter > 200){"
+      "counter = 0;"
+      "}"
+    //"myData = e.data;"
   "}, false);"
 "}"
+  
 "</script>";
-
-String contentHTMLScript = ""
-  "<body>"
-  "hello world"
-  "</body>"
-"</html>";
-
 
 String contentHeadStyle = ""
 "<!DOCTYPE HTML><html>"
 "<head>"
 "<title>CajitaAbierta</title>"
 "<meta name = \"viewport\" content = \"width = device-width, initial-scale = 1.0, maximum-scale = 1.0, user-scalable=0\">"
-
+"<link rel=\"icon\" href=\"data:,\">"
 "<style>" 
 "body { background-color: #FF9F0F;font-family: Arial, Helvetica, sans-serif;Color: #111111;"
 "font-size: 18px; margin-left:auto;margin-right:auto;}"
@@ -95,8 +143,6 @@ String contentHeadStyle = ""
     "<p></p>"
     "<form method='get' action='reboot'>"
     "<INPUT type=\"submit\" value=\"reboot\">"
-    //"<button type=\"button\" onclick=\"alert('Hello world!')\">Click Me!</button>"
- 
     "</form></body></html>";
 
   String menuHome = 
@@ -150,7 +196,7 @@ void monContentHome(){
     ">"
     "<label for=\"OSC2\">OSC</label><br>"
     
-    "<INPUT type=\"submit\" value=\"submit\">"    
+    "<INPUT type=\"submit\" value=\"submit\">"  
     "</form></body></html>";
   }
  

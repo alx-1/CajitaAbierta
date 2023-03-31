@@ -1,10 +1,14 @@
 #include "config.h"
 
 //// Sensors ////
-const long period = 5; //time between samples in milliseconds // change from '10' to '5' when not printing to serial
+const long period = 2; //time between samples in milliseconds // change from '10' to '5' when not printing to serial
 long startMillis = 0;
+unsigned long lastTime = 0;
 // bool playback = false;
 bool portalStart = false;
+
+#include <microsmooth.h>
+uint16_t *history = ms_init(EMA); // microsmooth init
 
 #include "blowsuck.h"
 #include "params.h"
@@ -15,6 +19,7 @@ bool portalStart = false;
 #include "WiFI_.h"
 #include "portal.h"
 #include "record_play.h"
+
 //// For a PWM to the LEDPIN on the nodeMCU ESP32
 #include <analogWrite.h> // From the polyfill analogWrite library for ESP32 //
 #ifndef LED_BUILTIN
@@ -26,6 +31,8 @@ bool portalStart = false;
 void setup() {
     //WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP    
     Serial.begin(115200);
+    
+    
     
     #if defined Display
     displaySetup();
@@ -88,6 +95,9 @@ void setup() {
         //    record : don't start wifi, check sensors, save to array , then save to file, then reboot into play mode
         Serial.println("We're recording");
     }
+    
+    
+    
       
 }
 
@@ -113,6 +123,7 @@ void loop() {
       getButtonState();
       #endif
       #if defined useAnalogSensors
+      Serial.println("reading them analog sensors");
       readSensors(); 
       #endif
       sendOSCMidi();
@@ -122,9 +133,8 @@ void loop() {
         displayMessage(2,0); // Overall sensors 
         }else{
         displayMessage(3,0); // Single sensor display 
-        minMaxToBeSet = true; // In this mode, a long press will enter the calibration of the sensor
         }
-       #endif
+      #endif
        while ((millis() - startMillis) < period);      //waits until period done
        } else {
         serverListen();
@@ -237,4 +247,26 @@ void loop() {
       serverListen();
       }
     //} Fin Webok conditions
+    
+    if(minMaxCalibration == true){
+     
+        //events.send("ping",NULL,millis());
+    while ((millis() - lastTime) > period*10) {
+      readSensors();
+      if(myMin > sensor1Value){
+        myMin = sensor1Value;
+        }
+      if(myMax < sensor1Value){
+        myMax = sensor1Value;
+        }
+      myData["sensor1Value"] = String(sensor1Value);
+      myData["myMin"] = String(myMin); 
+      myData["myMax"] = String(myMax); 
+      Serial.println("sending data over");
+      String jsonString = JSON.stringify(myData);
+      events.send(jsonString.c_str(),"message" ,millis());
+      lastTime = millis();
+      } 
+    }
+    
 }

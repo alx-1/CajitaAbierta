@@ -5,6 +5,8 @@
 ///////Preferences /////////
 #include <Preferences.h>
 Preferences preferences;
+#include <Arduino_JSON.h>
+
 
 IPAddress monIP(192, 168, 8, 1);
 
@@ -33,7 +35,12 @@ IPAddress monIP(192, 168, 8, 1);
   byte sensorData[myArrayLength] = {0}; // Array to store the values, intialize with 0s
   //  byte sensorData[10] = {0}; // Array to store the values, intialize with 0s
   long sensorIndex = 0; // Keep track of the values in the array
-  bool minMaxToBeSet = false; // A true value and a long press will call the min max routine 
+  bool minMaxCalibration = false; // A true value and a long press will call the min max routine 
+  int myMin = 4096;
+  int myMax = 0;
+  
+  // Json Variable to Hold Sensor Readings
+  JSONVar myData;
 
 #if defined Accelerometer
   String accelX;
@@ -75,6 +82,7 @@ IPAddress monIP(192, 168, 8, 1);
   String sensor1Chan;
   String sensor1CC;
   String sensor1Cal;
+  String s1EMAFilter;
   String sensor2;
   String sensor2Chan;
   String sensor2CC;
@@ -223,6 +231,8 @@ void preferencesGet(){
   //Serial.print("sensor1Chan: ");Serial.println(sensor1Chan);
   sensor1CC= preferences.getString("sensor1CC","not set");
   //Serial.print("sensor1CC: ");Serial.println(sensor1CC);
+  s1EMAFilter = preferences.getString("s1EMAFilter","not set");
+  Serial.print("s1EMAFilter: ");Serial.println(s1EMAFilter);
 
   sensor2 = preferences.getString("sensor2","");
   //Serial.print("sensor2: ");Serial.println(sensor2);

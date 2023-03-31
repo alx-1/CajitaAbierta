@@ -28,8 +28,6 @@ bool readCFSensor(byte sensorAddress);
        
 void pressureSensorSetup(){
     Wire.begin(); // for the pressure sensor
-    // filter
-    //ptr = ms_init(EMA);
     }
     
 // Blow Suck sensor XGZP6897D I2C

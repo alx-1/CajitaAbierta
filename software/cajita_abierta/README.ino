@@ -1,9 +1,10 @@
 // CajitaAbierta v.0.47
 // UDP OSC MIDi Sensor board
-// * mdns discovery for negociating UDP sending port
-// * configuration through captive portal 
+// * Mdns discovery for negociating UDP sending port
+// * Configuration through captive portal 
 // * OTA upload of new binary image
 // * Accelerometer / air pressure / analog sensors implemented
+// * Select where to send the data (TDLF, OSCServer, touchOSCBridge)
 // * See License file
 
 // HARDWARE REQUIREMENTS
@@ -17,10 +18,12 @@
 // Seeed Studio's ADXL345 v 1.0.0
 // Adafruit's GFX v. 1.10.12
 // Adafruit's SSD1306 v. 2.4.6
-// Tof's MicroOSCUDP (distributed with this archive)
 // LittleFS_esp32 by lorol 1.0.6
-// AsyncElegantOTA 2.2.?
-// EspAsyncWebServer (distributed with this archive)
+// AsyncElegantOTA 2.2.7
+// Microsmooth
+// Tof's MicroOSCUDP (distributed with this archive)
+// ESPAsyncWebServer (distributed with this archive) Not! the one named ESPAsyncWebSrvr
+
 
 // Used Library
 // Preferences (built in, you don't need to install it)
