@@ -94,3 +94,37 @@ void browseService(const char * service, const char * proto){
         oscServerFound = true; 
       }
 }
+
+void sendSensorsData(String sensors){
+  
+    if ((millis() - lastTime) > period*30) {
+
+      #if defined useAnalogSensors
+      if ( sensors == "analogSensors" ) {
+          if ( sensor1 == "checked"){
+            //Serial.println("sending s1 data over");
+            myData["sensor1Value"] = String(sensor1Value);
+            myData["sensor1Min"] = String(sensor1Min); 
+            myData["sensor1Max"] = String(sensor1Max); 
+            myData["sensor1Midi"] = String(sensor1Midi);
+            //String jsonString = JSON.stringify(myData);
+            //events.send(jsonString.c_str(),"message" ,millis());
+            } 
+          
+          if ( sensor2 == "checked"){
+            //Serial.println("sending s2 data over");
+            myData["sensor2Value"] = String(sensor2Value);
+            myData["sensor2Min"] = String(sensor2Min); 
+            myData["sensor2Max"] = String(sensor2Max); 
+            myData["sensor2Midi"] = String(sensor2Midi);
+            //String jsonString = JSON.stringify(myData);
+            //events.send(jsonString.c_str(),"message" ,millis());
+            }
+            
+          String jsonString = JSON.stringify(myData);
+          events.send(jsonString.c_str(),"message" ,millis());
+          lastTime = millis();
+        } 
+        #endif
+     }
+   }

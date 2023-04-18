@@ -138,9 +138,9 @@ void displayMessage(int i, int j){
       display.println(int(sensor1Value)); 
       }
       if (sensor2 =="checked"){   
-      display.setCursor(32, 36);
+      display.setCursor(46, 36);
       display.print(F("S2:"));
-      display.setCursor(48, 36);
+      display.setCursor(62, 36);
       display.println(int(sensor2Value)); 
       }
       if (sensor3 == "checked"){

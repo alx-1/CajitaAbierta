@@ -35,9 +35,7 @@ IPAddress monIP(192, 168, 8, 1);
   byte sensorData[myArrayLength] = {0}; // Array to store the values, intialize with 0s
   //  byte sensorData[10] = {0}; // Array to store the values, intialize with 0s
   long sensorIndex = 0; // Keep track of the values in the array
-  bool minMaxCalibration = false; // A true value and a long press will call the min max routine 
-  int myMin = 4096;
-  int myMax = 0;
+  String calibratingSensors = "none"; // A true value and a long press will call the sensor calibration
   
   // Json Variable to Hold Sensor Readings
   JSONVar myData;
@@ -77,13 +75,19 @@ IPAddress monIP(192, 168, 8, 1);
     
 #if defined useAnalogSensors
   String sensor1;
+  String s1EMAFilter;
   String sensor1Min;
   String sensor1Max;
+  String sensor1Midi;
   String sensor1Chan;
   String sensor1CC;
   String sensor1Cal;
-  String s1EMAFilter;
+  
   String sensor2;
+  String s2EMAFilter;
+  String sensor2Min;
+  String sensor2Max;
+  String sensor2Midi;
   String sensor2Chan;
   String sensor2CC;
   String sensor3;
@@ -122,7 +126,7 @@ File fileToAppend;
 void preferencesGet(){
 
   // WiFI
-  Serial.println("Reading Preferences");
+  Serial.println("*** Reading Preferences ***");
   ssid = preferences.getString("ssid", "not set yet");
   Serial.print("SSID: ");Serial.println(ssid);
   password = preferences.getString("password", "not set yet");
@@ -149,10 +153,10 @@ void preferencesGet(){
   //Serial.print("checkedFormatFS: ");Serial.println(checkedFormatFS); 
   
   monDelai = preferences.getString("monDelai", "");
-  Serial.print("monDelai: ");Serial.println(monDelai);
+  // Serial.print("monDelai: ");Serial.println(monDelai);
   
   arrayLength = preferences.getString("arrayLength", "");
-  Serial.print("arrayLength: ");Serial.println(arrayLength);
+  // Serial.print("arrayLength: ");Serial.println(arrayLength);
 //
 //myArrayLength = arrayLength.toInt();
 //sensorData[myArrayLength] = {0}; // Array to store the values, intialize with 0s
@@ -227,19 +231,36 @@ void preferencesGet(){
 #endif
   sensor1 = preferences.getString("sensor1","");
   //Serial.print("sensor1: ");Serial.println(sensor1);
+  s1EMAFilter = preferences.getString("s1EMAFilter","not set");
+  Serial.print("s1EMAFilter: ");Serial.println(s1EMAFilter);
+  
+  //sensor1Min = preferences.getString("sensor1Min","4095");
+  //Serial.print("Get sensor1Min: ");Serial.println(sensor1Min);
+  //sensor1Max = preferences.getString("sensor1Max","0");
+  //Serial.print("Get sensor1Max: ");Serial.println(sensor1Max);
+  
+  sensor1Midi = preferences.getString("sensor1Midi","err");
+  Serial.print("sensor1Midi: ");Serial.println(sensor1Midi);
   sensor1Chan = preferences.getString("sensor1Chan","not set");
   //Serial.print("sensor1Chan: ");Serial.println(sensor1Chan);
   sensor1CC= preferences.getString("sensor1CC","not set");
   //Serial.print("sensor1CC: ");Serial.println(sensor1CC);
-  s1EMAFilter = preferences.getString("s1EMAFilter","not set");
-  Serial.print("s1EMAFilter: ");Serial.println(s1EMAFilter);
-
+ 
   sensor2 = preferences.getString("sensor2","");
   //Serial.print("sensor2: ");Serial.println(sensor2);
+  sensor2Midi = preferences.getString("sensor2Midi","err");
+  Serial.print("sensor2Midi: ");Serial.println(sensor2Midi);
+  s2EMAFilter = preferences.getString("s2EMAFilter","not set");
+  Serial.print("s2EMAFilter: ");Serial.println(s2EMAFilter);
+  //sensor2Min = preferences.getString("sensor2Min","4095");
+  //Serial.print("sensor2Min: ");Serial.println(sensor2Min);
+  //sensor2Max = preferences.getString("sensor2Max","0");
+  //Serial.print("sensor2Max: ");Serial.println(sensor2Max);
   sensor2Chan= preferences.getString("sensor2Chan","");
   //Serial.print("sensor2Chan: ");Serial.println(sensor2Chan);
   sensor2CC= preferences.getString("sensor2CC","");
   //Serial.print("sensor2CC: ");Serial.println(sensor2CC);
+
 
   sensor3 = preferences.getString("sensor3","");
   //Serial.print("sensor3: ");Serial.println(sensor3);

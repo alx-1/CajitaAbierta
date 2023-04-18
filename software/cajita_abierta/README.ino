@@ -1,4 +1,4 @@
-// CajitaAbierta v.0.47
+// CajitaAbierta v.0.48
 // UDP OSC MIDi Sensor board
 // * Mdns discovery for negociating UDP sending port
 // * Configuration through captive portal 
@@ -34,7 +34,8 @@
 // (done) * improve .bin upload interface
 // (done) * fix bug Sensor1 preferences saving
 // (done) * actually select udp destination (tdlf, chataigne, touchoscbridge) sending based on the user's choice
-// (done) * switch to asynchronous mode to enable ranging via the captive portal
+// (done) * switch to asynchronous mode for the captive portal
+// (done) * add graph to the sensor config page
 // * add choice for data format or osc
 // * run performances check (how many readings per second make it to the instruments)
 // * have a ranging routine for mapping of the sensor data 

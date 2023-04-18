@@ -23,21 +23,21 @@ AsyncWebServer server(80); //*
 // Create an Event Source on /events
 AsyncEventSource events("/events"); //*
 
-String processor(const String& var){
-  Serial.println("something");
-  return String("there");
-  //getSensorReadings();
-  //Serial.println(var);
-  //if(var == "TEMPERATURE"){
-  //  return String(temperature);
-  //}
-  //else if(var == "HUMIDITY"){
-  //  return String(humidity);
-  //}
-  //else if(var == "PRESSURE"){
-  //  return String(pressure);
-  //}
-}
+//String processor(const String& var){
+//  Serial.println("something");
+//  return String("there");
+//  //getSensorReadings();
+//  //Serial.println(var);
+//  //if(var == "TEMPERATURE"){
+//  //  return String(temperature);
+//  //}
+//  //else if(var == "HUMIDITY"){
+//  //  return String(humidity);
+//  //}
+//  //else if(var == "PRESSURE"){
+//  //  return String(pressure);
+//  //}
+//}
 
 
 void portalScanNetworks(){
@@ -96,7 +96,7 @@ void startPortal(){
 
   portalScanNetworks();
   preferencesGet();
-  monContentHTMLScript();
+  //monContentHTMLScript();
   monContentHome(); // Try to update with the latest values
   #if defined Accelerometer
   monContentAccel();
@@ -124,7 +124,9 @@ void startPortal(){
     });
   
   server.on("/sensors.html", HTTP_GET, [](AsyncWebServerRequest *request){ 
-    request->send(200, "text/html", contentHeadStyle+contentSensors); 
+    calibratingSensors = "analogSensors"; // accel, blow/suck, none
+    myMode = "calibrating";
+    request->send(200, "text/html", contentHeadStyle+contentSensors+contentScript); 
     });
   
   server.on("/mode.html", HTTP_GET, [](AsyncWebServerRequest *request){ 
@@ -313,22 +315,38 @@ void startPortal(){
 #endif
 
     server.on("/sensorscfg", HTTP_GET, [](AsyncWebServerRequest *request){
-    int params = request->params();
+      preferencesGet();
+      //monContentHTMLScript();
+      monContentSensors();
+      
+      calibratingSensors = "analogSensors"; // accel, blow/suck, none
+      myMode = "calibrating";
+      initSensorsCfg(); // set them all to "unchecked"
+      int params = request->params();
     for(int i=0;i<params;i++){
       AsyncWebParameter* p = request->getParam(i);
-        if (p->name() == "sensor1"){sensor1 = p->value().c_str();}
+        if (p->name() == "sensor1"){sensor1 = p->value().c_str();
+          Serial.print(" ---- sensor1 :");Serial.println(sensor1); 
+          }
+        else if (p->name() == "s1EMAFilter"){s1EMAFilter = p->value().c_str();}
+        else if (p->name() == "sensor1Midi"){sensor1Midi = p->value().c_str();}
         else if (p->name() == "sensor1Chan"){sensor1Chan = p->value().c_str();}
         else if (p->name() == "sensor1CC"){sensor1CC = p->value().c_str();}
-        else if (p->name() == "sensor1Cal"){sensor1Cal = p->value().c_str();}
-        else if (p->name() == "sensor2"){sensor2 = p->value().c_str();}
+        
+        else if (p->name() == "sensor2"){sensor2 = p->value().c_str();
+          Serial.print(" ---- sensor2 :");Serial.println(sensor2);
+          }
+        else if (p->name() == "s2EMAFilter"){s2EMAFilter = p->value().c_str();}
+        else if (p->name() == "sensor2Midi"){sensor2Midi = p->value().c_str();}
         else if (p->name() == "sensor2Chan"){sensor2Chan = p->value().c_str();}
         else if (p->name() == "sensor2CC"){sensor2CC = p->value().c_str();}
         Serial.printf("_GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
     }
+
       if ( sensor1 == "on" ){ sensor1 = "checked"; } else { sensor1 = "unchecked"; }
-      if(sensor1!= preferences.getString("sensor1")){
+      //if(sensor1!= preferences.getString("sensor1")){
         preferences.putString("sensor1",sensor1);
-        }
+        //}
 
       Serial.print("sensor1CC: "); Serial.println(sensor1CC);
       if(sensor1CC != ""){
@@ -336,51 +354,16 @@ void startPortal(){
         preferences.putString("sensor1CC",sensor1CC);
         }
 
+      if ( sensor1Midi == "on" ){ sensor1Midi = "checked"; } else { sensor1Midi = "unchecked"; }
+      if(sensor1Midi!= preferences.getString("sensor1Midi")){
+        preferences.putString("sensor1Midi",sensor1Midi);
+        }
+
       Serial.print("sensor1Chan: "); Serial.println(sensor1Chan);
       if(sensor1Chan != ""){
         preferences.putString("sensor1Chan",sensor1Chan);
         }
-
-      Serial.print("sensor1Cal: "); Serial.println(sensor1Cal);
-      if(sensor1Cal != ""){
-        preferences.putString("sensor1Cal",sensor1Cal);
-        }
-            
-      if ( sensor2 == "on" ){ sensor2 = "checked"; } else { sensor2 = "unchecked"; }
-      if(sensor2!= preferences.getString("sensor2")){
-      preferences.putString("sensor2",sensor2);
-      }
-
-      Serial.print("sensor2CC: "); Serial.println(sensor2CC);
-      if(sensor2CC != ""){
-      preferences.putString("sensor2CC",sensor2CC);
-      }
-
-      Serial.print("sensor2Chan: "); Serial.println(sensor2Chan);
-      if(sensor2Chan != ""){
-      preferences.putString("sensor2Chan",sensor2Chan);
-      }
-      
-      request->send(200, "text/html", contentHeadStyle+contentReboot);
         
-     }); // Fin sensorscfg
-
-    server.on("/calibrate", HTTP_GET, [](AsyncWebServerRequest *request){ 
-      //if (preferences.getString(sensor1Cal == "calibrate"){
-      Serial.println("Calibrating sensors"); // which sensors?
-      minMaxCalibration = true;
-
-      request->send(200, "text/html", contentHeadStyle+contentHTMLScript+contentScript);
-      }); // Fin calibrate
-
-    server.on("/filters", HTTP_GET, [](AsyncWebServerRequest *request){ 
-      Serial.println("Enabling filters"); // which sensors?
-      int params = request->params();
-      for(int i=0;i<params;i++){
-        AsyncWebParameter* p = request->getParam(i);
-        if (p->name() == "s1EMAFilter"){s1EMAFilter = p->value().c_str();}
-        Serial.printf("_GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
-        }
       if ( s1EMAFilter == "on" ){ s1EMAFilter = "checked"; } else { s1EMAFilter = "unchecked"; }
       if(s1EMAFilter != preferences.getString("s1EMAFilter")){
         preferences.putString("s1EMAFilter",s1EMAFilter);
@@ -388,10 +371,54 @@ void startPortal(){
         s1EMAFilter = preferences.getString("s1EMAFilter","grr");
         Serial.print("reading s1EMAFilter : ");Serial.println(s1EMAFilter); 
         }
-      request->send(200, "text/html", contentHeadStyle+contentHTMLScript+contentScript);
-      }); // Fin calibrate
 
+      /*
+      preferences.putString("sensor1Min",sensor1Min);
+      //preferences.putString("sensor1Min","4096");
+      Serial.print("writing sensor1Min : ");Serial.println(sensor1Min);
+      sensor1Min = preferences.getString("sensor1Min","4095");
+      Serial.print("reading sensor1Min : ");Serial.println(sensor1Min); 
+
+      preferences.putString("sensor1Max",sensor1Max);
+      //preferences.putString("sensor1Max","0");
+      Serial.print("writing sensor1Max : ");Serial.println(sensor1Max);
+      sensor1Max = preferences.getString("sensor1Max","0");
+      Serial.print("reading sensor1Max : ");Serial.println(sensor1Max); 
+       */
+      // sensor2      
+      if ( sensor2 == "on" ){ sensor2 = "checked"; } else { sensor2 = "unchecked"; }
+      if(sensor2!= preferences.getString("sensor2")){
+      preferences.putString("sensor2",sensor2);
+      }
+
+      if ( s2EMAFilter == "on" ){ s2EMAFilter = "checked"; } else { s2EMAFilter = "unchecked"; }
+      if(s2EMAFilter != preferences.getString("s2EMAFilter")){
+        preferences.putString("s2EMAFilter",s2EMAFilter);
+        Serial.print("writing s2EMAFilter : ");Serial.println(s2EMAFilter);
+        s2EMAFilter = preferences.getString("s2EMAFilter","grr");
+        Serial.print("reading s2EMAFilter : ");Serial.println(s2EMAFilter); 
+      }
+
+      if ( sensor2Midi == "on" ){ sensor2Midi = "checked"; } else { sensor2Midi = "unchecked"; }
+      if(sensor2Midi!= preferences.getString("sensor2Midi")){
+        preferences.putString("sensor2Midi",sensor2Midi);
+      }
+    
+      Serial.print("sensor2Chan: "); Serial.println(sensor2Chan);
+      if(sensor2Chan != ""){
+      preferences.putString("sensor2Chan",sensor2Chan);
+      }
       
+      Serial.print("sensor2CC: "); Serial.println(sensor2CC);
+      if(sensor2CC != ""){
+      preferences.putString("sensor2CC",sensor2CC);
+      }
+
+      preferencesGet();
+      monContentSensors(); // reload the new prefs for display
+      request->send(200, "text/html", contentHeadStyle+contentSensors+contentScript); 
+        
+     }); // Fin sensorscfg
 
   server.on("/wificfg", HTTP_GET, [](AsyncWebServerRequest *request){ 
 
