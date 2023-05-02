@@ -24,7 +24,7 @@ display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   // Show initial display buffer contents on the screen --
   // the library initializes this with an Adafruit splash screen.
   #if defined displayRotate
-  display.setRotation(0);
+  display.setRotation(2);
   #endif
   display.clearDisplay();
   display.setTextSize(1);             // Normal 1:1 pixel scale

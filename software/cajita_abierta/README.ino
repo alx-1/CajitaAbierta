@@ -30,6 +30,7 @@
 
 // TODO
 // ====
+// * add a way to identify individually a cajita (ex 'cajita1')
 
 // (done) * improve .bin upload interface
 // (done) * fix bug Sensor1 preferences saving

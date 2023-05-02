@@ -2,7 +2,8 @@
 
 WiFiUDP udp;
 IPAddress sendIp(192, 168, 0, 255); // <- default not really used, we are using Bonjour (mDNS) to find IP and PORT of touchoscbridge
-unsigned int sendPort = 12101; // <- touchosc port
+//unsigned int sendPort = 12101; // <- touchosc port
+unsigned int sendPort = 9996; // <- touchosc port
 bool oscServerFound = false;
 
 MicroOscUdp<1024> oscUdp(&udp, sendIp, sendPort);
@@ -49,6 +50,7 @@ void sendOSCMidi(){
       // Serial.println("sending to tdlf");
       oscUdp.sendMessage("/midi",  "m",  midi); // send to tdlf server
       } else if (checkedTOSCB == "checked" || checkedOSC == "checked"){
+        // Serial.println("sending OSC via UDP");
         oscUdp.sendMessage("/midi/", "i", midi[1]); // send to Udp server, such as chataigne
       }
      
