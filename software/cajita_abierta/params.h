@@ -10,6 +10,10 @@ Preferences preferences;
 
 IPAddress monIP(192, 168, 8, 1);
 
+  String apNameString = "Cajita";
+  char apName[21] = "CajitaAbierta";
+
+  
   // WiFI
   String ssid = "yep";
   String password;

@@ -58,12 +58,14 @@ void displayMessage(int i, int j){
       display.setCursor(5, 0);
       display.print(F("Connect to:"));// Start at top-left corner
       display.setCursor(5, 20);
-      display.println(F("CajitaAbierta"));
+      //display.println(F("CajitaAbierta"));
+      display.println(F(apName));
+      
       display.setCursor(5, 52);
       display.println(F("http://192.168.1.1"));
       display.display();
       delay(5000); // Pause for 5 second
-      Serial.println("Connect to CajitaAbiera");
+      Serial.print("Connect to ");Serial.println(apName);
       break;
       
     case 2: // We are connected and checking sensors

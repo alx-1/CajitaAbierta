@@ -26,7 +26,6 @@ uint16_t *history2 = ms_init(EMA); // microsmooth init
 void setup() {
     //WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP    
     Serial.begin(115200);
-    
     #if defined Display
     displaySetup();
     #endif
@@ -88,9 +87,7 @@ void setup() {
         //    record : don't start wifi, check sensors, save to array , then save to file, then reboot into play mode
         Serial.println("We're recording");
     }
-    
-    
-    
+    getMacAddress();
       
 }
 

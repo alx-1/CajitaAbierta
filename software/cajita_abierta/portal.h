@@ -92,7 +92,8 @@ void startPortal(){
   displayMessage(12,0);
   WiFi.mode(WIFI_AP);
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-  WiFi.softAP("CajitaAbierta");
+  //WiFi.softAP("CajitaAbierta");
+  WiFi.softAP(apName);
 
   portalScanNetworks();
   preferencesGet();
