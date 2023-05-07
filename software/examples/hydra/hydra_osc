@@ -1,0 +1,24 @@
+/* 
+Example using osc-js to bridge local udp / osc messages to the browser via websockets. For more information, see: https://github.com/ojack/hydra-osc
+and follow instructions to run a local websocket server.
+*/
+await loadScript("https://cdn.jsdelivr.net/gh/ojack/hydra-osc/lib/osc.min.js")
+
+
+
+_osc = new OSC()
+_osc.open()
+
+/* example to receive osc */
+
+_osc.on("*", (m) => { console.log(m.address, m.args)})
+
+hue = 0
+_osc.on("/midi", (m) => {
+  console.log(m)
+  hue = m.args[0]/255
+})
+
+shape(3).color(-1, 1).hue(() => hue).out()
+
+//shape(4,0.2,0.001).out(o0)
