@@ -11,6 +11,7 @@
 // =====================
 // ESP32 board (Tested on Node32s)
 // The sensors you want, the accelerometer is based on a ADXL345 
+// Edit the "config.h" file to enable the various sensors
 
 // LIBRAIRIES TO INSTALL 
 // ===================== 
