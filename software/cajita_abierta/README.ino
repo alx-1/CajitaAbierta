@@ -37,6 +37,7 @@
 // (done) * switch to asynchronous mode for the captive portal
 // (done) * add graph to the sensor config page
 // (done) * produce guide for how to use with hydra
+// * Ajouter un capteur 'bio-senseur'
 // * add choice for data format or osc
 // * run performances check (how many readings per second make it to the instruments)
 // * have a ranging routine for mapping of the sensor data 
