@@ -9,3 +9,6 @@
 #endif
 
 void sendSensorsData(String someValue);
+
+void listFile(String someOtherValue);
+void writeFile(String myFile, String myMessage);

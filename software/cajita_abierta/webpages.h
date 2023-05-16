@@ -521,8 +521,8 @@ void monContentMode(){
       ">"
       "</li><li>"
       "<label> arrayLength : </label>"
-      "<input type ='text' name='arrayLength' placeholder= "
-      + arrayLength +
+      "<input type ='text' name='monArrayLength' placeholder= "
+      + monArrayLength +
       ">"
       "</li></ol>"
       "<INPUT type=\"submit\" value=\"save\">"

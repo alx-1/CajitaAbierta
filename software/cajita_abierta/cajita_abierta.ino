@@ -85,6 +85,7 @@ void setup() {
         littleFSFormat();
       } else if (myMode == "record"){
         //    record : don't start wifi, check sensors, save to array , then save to file, then reboot into play mode
+        littleFSSetup();
         Serial.println("We're recording");
     }
     getMacAddress();
@@ -150,7 +151,7 @@ void loop() {
       #if defined useButton
       getButtonState();
       #endif
-      #if defined useSensors
+      #if defined useAnalogSensors
       playbackReadSensors();
       #endif
       sendOSCMidi();
@@ -163,17 +164,31 @@ void loop() {
         }
        #endif
        sensorIndex = sensorIndex+12;
-       if(sensorIndex > myArrayLength){
+       // Serial.print("sensorIndex : ");Serial.println(sensorIndex);
+       if(sensorIndex > monArrayLength.toInt()){
         sensorIndex = 0; // reset
        }
       } else {
         serverListen();
         }
     } else if (myMode == "record"){
-      // Do we have the 'all done' from the web interface?
+
       sensorIndex = 0;
 
-      while(sensorIndex < myArrayLength){
+      // Countdown !! // 
+      Serial.print("monDelai : ");Serial.println(monDelai);
+      countDownFrom = int(monDelai.toInt()); // c_str())).toInt()
+      Serial.print("countDownFrom : ");Serial.println(countDownFrom);
+      
+      for(countDownFrom;countDownFrom>=0;countDownFrom--){
+        Serial.print("countDownFrom : ");Serial.println(countDownFrom);
+        displayMessage(15,countDownFrom); // 
+        delay(1000);  
+      }
+
+      Serial.print("monArrayLength : ");Serial.println(monArrayLength);
+      
+      while(sensorIndex < monArrayLength.toInt()){
         //  record : don't start wifi, check sensors, populate array , then save to file, then reboot into play mode
         Serial.print("Recording, ");Serial.print("sensorIndex : ");Serial.println(sensorIndex);
         #if defined Accelerometer

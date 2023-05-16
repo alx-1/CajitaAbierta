@@ -10,7 +10,7 @@ void readSensors(){  // check the sensors here
  
     if ( sensor1 == "checked" ){
       sensor1Value = analogRead(32); // R3 // 32
-      //Serial.print("sensor1Value : ");Serial.println(sensor1Value);
+      Serial.print("sensor1Value : ");Serial.println(sensor1Value);
       if(s1EMAFilter == "checked"){
         sensor1Value = ema_filter(sensor1Value, history1);
         //Serial.print("sensor1Value After EMA filtering : ");Serial.println(sensor1Value);
@@ -67,11 +67,19 @@ void readSensors(){  // check the sensors here
 }
 
 void playbackReadSensors(){
+    //Serial.print("sensor1: ");Serial.println(sensor1);
     if ( sensor1 == "checked"){
       sensor1Value = sensorData[sensorIndex+8]; // Read the values from the array
+      //Serial.print("sensor1Value at : ");
+      //Serial.print(sensorIndex+8);
+      //Serial.print(" : ");
+      //Serial.println(sensor1Value);
       }
     if ( sensor2 == "checked"){
       sensor2Value = sensorData[sensorIndex+9];
+      // Serial.print("sensor2Value : ");
+      // Serial.print(sensorIndex+9);
+      // Serial.println(sensor2Value);
       }
     if ( sensor3 == "checked"){
       sensor3Value = sensorData[sensorIndex+10];

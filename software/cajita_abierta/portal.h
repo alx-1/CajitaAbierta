@@ -474,7 +474,7 @@ void startPortal(){
       AsyncWebParameter* p = request->getParam(i);
       if (p->name() == "myMode"){myMode = p->value().c_str();}
       else if (p->name() == "monDelai"){monDelai = p->value().c_str();}
-      else if (p->name() == "arrayLength"){arrayLength = p->value().c_str();}
+      else if (p->name() == "monArrayLength"){monArrayLength = p->value().c_str();}
       //Serial.printf("_GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
       }
     
@@ -482,43 +482,46 @@ void startPortal(){
 
     if(myMode == "checkedLive"){ 
       preferences.putString("myMode","live");
-      myMode = "live";
+      // myMode = "live";
       preferences.putString("checkedLive","checked");
       preferences.putString("checkedPlay","unchecked");
       preferences.putString("checkedRecord","unchecked");
       preferences.putString("checkedFormatFS","unchecked");
       } else if(myMode == "checkedPlay") {
       preferences.putString("myMode","playback");
-      myMode = "playback";
+      // myMode = "playback";
       preferences.putString("checkedLive","unchecked");
       preferences.putString("checkedPlay","checked");
       preferences.putString("checkedRecord","unchecked");
       preferences.putString("checkedFormatFS","unchecked");
       } else if(myMode == "checkedRecord") {
-      Serial.println("********** writing in record mode ***********");
+      Serial.println("*** Will reboot in record mode ***");
       preferences.putString("myMode","record");
-      myMode = "record";
+      // myMode = "record";
       preferences.putString("checkedLive","unchecked");
       preferences.putString("checkedPlay","unchecked");
       preferences.putString("checkedRecord","checked");
       preferences.putString("checkedFormatFS","unchecked");
       } else if(myMode == "checkedFormatFS") {
       preferences.putString("myMode","formatFS");
-      myMode = "formatFS";
+      // myMode = "formatFS";
       preferences.putString("checkedLive","unchecked");
       preferences.putString("checkedPlay","unchecked");
       preferences.putString("checkedRecord","unchecked");
       preferences.putString("checkedFormatFS","checked");
       }
-    
+
+    Serial.print("monDelai : ");Serial.println(monDelai);
     if(monDelai != ""){
+      Serial.println("Writing monDelai");
       preferences.putString("monDelai",monDelai);
       }
-    if(arrayLength != ""){
-      preferences.putString("arrayLength",arrayLength);
+    if(monArrayLength != ""){
+      preferences.putString("monArrayLength",monArrayLength);
       }
       
-    request->send(200, "text/html", contentHeadStyle+contentReboot); 
+    request->send(200, "text/html", contentHeadStyle+contentReboot);
+    
   });
   
   AsyncElegantOTA.begin(&server);    // Start AsyncElegantOTA // Connect to 192.168.1.1/update

@@ -29,15 +29,14 @@ IPAddress monIP(192, 168, 8, 1);
   String checkedRecord;
   String checkedFormatFS;
   String monDelai;
-  String arrayLength;
+  String monArrayLength;
+  int countDownFrom;
 
   // For recording
   int blowValue = 0;
   int suckValue = 0;
-
-  const int myArrayLength = 5000;  // 75500 max tested
-  byte sensorData[myArrayLength] = {0}; // Array to store the values, intialize with 0s
-  //  byte sensorData[10] = {0}; // Array to store the values, intialize with 0s
+  byte sensorData[75500] = {0}; // Array to store the values, intialize with 0s, initialize at tested max
+  // byte sensorData[42] = {0}; 
   long sensorIndex = 0; // Keep track of the values in the array
   String calibratingSensors = "none"; // A true value and a long press will call the sensor calibration
   
@@ -144,29 +143,42 @@ void preferencesGet(){
   Serial.print("checkedOSC: ");Serial.println(checkedOSC);
 
   // Mode
-  myMode = preferences.getString("myMode", "");
-  Serial.print("myMode: ");Serial.println(myMode);
   checkedLive = preferences.getString("checkedLive", "");
-  //Serial.print("checkedLive: ");Serial.println(checkedLive); 
+  Serial.print("checkedLive: ");Serial.println(checkedLive); 
+  if (checkedLive == "checked"){
+    myMode = "live";
+  }
   checkedPlay = preferences.getString("checkedPlay", "");
-  //Serial.print("checkedPlay: ");Serial.println(checkedPlay);   
+  Serial.print("checkedPlay: ");Serial.println(checkedPlay); 
+  if (checkedPlay == "checked"){
+    myMode = "playback";
+  } 
   checkedRecord = preferences.getString("checkedRecord", "");
-  //Serial.print("checkedRecord: ");Serial.println(checkedRecord); 
-  
+  Serial.print("checkedRecord: ");Serial.println(checkedRecord); 
+  if (checkedRecord == "checked"){
+    myMode = "record";
+  }
   checkedFormatFS = preferences.getString("checkedFormatFS", "");
-  //Serial.print("checkedFormatFS: ");Serial.println(checkedFormatFS); 
+  Serial.print("checkedFormatFS: ");Serial.println(checkedFormatFS); 
+    if (checkedFormatFS == "checked"){
+    myMode = "formatFS";
+  }
+  
+  // myMode = preferences.getString("myMode", "");
+  Serial.print("myMode: ");Serial.println(myMode);
   
   monDelai = preferences.getString("monDelai", "");
-  // Serial.print("monDelai: ");Serial.println(monDelai);
+  Serial.print("monDelai: ");Serial.println(monDelai);
   
-  arrayLength = preferences.getString("arrayLength", "");
-  // Serial.print("arrayLength: ");Serial.println(arrayLength);
+  monArrayLength = preferences.getString("monArrayLength", "");
+  if ((monArrayLength.toInt()) < 1){
+    monArrayLength = 5000; //
+  }
+  Serial.print("monArrayLength: ");Serial.println(monArrayLength);
 //
 //myArrayLength = arrayLength.toInt();
 //sensorData[myArrayLength] = {0}; // Array to store the values, intialize with 0s
-//sensorData[arrayLength.toInt()] = {0}; // Array to store the values, intialize with 0s
-
-//  //  byte sensorData[10] = {0}; // Array to store the values, intialize with 0s
+  //byte sensorData[monArrayLength.toInt()] = {0}; // Array to store the values, intialize with 0s  
 //
 //  long sensorIndex = 0; // Keep track of the values in the array
 
@@ -234,7 +246,7 @@ void preferencesGet(){
   //Serial.print("suckCC : ");Serial.println(suckCC);
 #endif
   sensor1 = preferences.getString("sensor1","");
-  //Serial.print("sensor1: ");Serial.println(sensor1);
+  Serial.print("sensor1: ");Serial.println(sensor1);
   s1EMAFilter = preferences.getString("s1EMAFilter","not set");
   Serial.print("s1EMAFilter: ");Serial.println(s1EMAFilter);
   
@@ -251,7 +263,7 @@ void preferencesGet(){
   //Serial.print("sensor1CC: ");Serial.println(sensor1CC);
  
   sensor2 = preferences.getString("sensor2","");
-  //Serial.print("sensor2: ");Serial.println(sensor2);
+  Serial.print("sensor2: ");Serial.println(sensor2);
   sensor2Midi = preferences.getString("sensor2Midi","err");
   Serial.print("sensor2Midi: ");Serial.println(sensor2Midi);
   s2EMAFilter = preferences.getString("s2EMAFilter","not set");

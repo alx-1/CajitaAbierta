@@ -305,7 +305,7 @@ void displayMessage(int i, int j){
       display.setCursor(36,48);
       display.println(F("/"));
       display.setCursor(46,48);
-      display.print((myArrayLength));
+      display.print((monArrayLength.toInt()));
       display.display();
       // delay(2000);
       break;
@@ -335,7 +335,7 @@ void displayMessage(int i, int j){
       display.setCursor(36,48);
       display.println(F("/"));
       display.setCursor(46,48);
-      display.print((myArrayLength));
+      display.print((monArrayLength.toInt()));
       display.display();
       //delay(2000);
       break;
@@ -404,6 +404,18 @@ void displayMessage(int i, int j){
       display.print(F("File System"));// Start at top-left corner
       display.display();
       delay(2000);
+      break;
+  
+    case 15: // Countdown to recording 
+      display.clearDisplay();
+      display.setTextSize(2);             // Normal 1:1 pixel scale
+      display.setCursor(3, 5);
+      display.print(F("Recording"));// Start at top-left corner
+      display.setCursor(3, 25);
+      display.print(F("in :"));// Start at top-left corner
+      display.setCursor(50, 25);
+      display.print(countDownFrom);// Start at top-left corner
+      display.display();
       break;
       
       }
