@@ -1,7 +1,7 @@
-// #define Accelerometer true
+ #define Accelerometer true
 // #define PressureSensor true
 #define Display true
-// #define displayRotate true // Enable for the accelerometer version of the cajita
+#define displayRotate true // Enable for the accelerometer version of the cajita
 #define useButton true
 #define useAnalogSensors true
 #ifndef LED_BUILTIN

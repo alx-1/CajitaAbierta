@@ -1,5 +1,7 @@
 # CajitaAbierta
 
+The repo for the firmware is now at : https://gitlab.com/darknessdesigner/cajitaabierta
+
 Start with the howtos : https://github.com/alx-1/CajitaAbierta/wiki
 
 Breakout wireless sensor circuit + software for the nodemcu ESP32S board.

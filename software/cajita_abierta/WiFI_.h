@@ -10,7 +10,8 @@ void getMacAddress(){
   WiFi.softAPmacAddress(mac);
   String hexByte = String(mac[WL_MAC_ADDR_LENGTH - 2], HEX);
   hexByte.toLowerCase();
-  String apNameString = "CajitaAbierta" + hexByte;
+  // String apNameString = "CajitaAbierta" + hexByte; // re-enable later
+  String apNameString = "CajitaAbierta";
   Serial.print("hexByte : ");Serial.println(hexByte);
   Serial.print("apNameString : ");Serial.println(apNameString);
   for (int i = 0; i < apNameString.length(); i++)

@@ -1,11 +1,18 @@
 {
   "metaData": {
-    "version": "1.9.13",
-    "versionNumber": 67853
+    "version": "1.9.14",
+    "versionNumber": 67854
   },
   "projectSettings": {
     "containers": {
       "dashboardSettings": {
+        "parameters": [
+          {
+            "value": "",
+            "controlAddress": "/showDashboardOnStartup",
+            "enabled": false
+          }
+        ]
       },
       "customDefinitions": {
       }
@@ -148,19 +155,15 @@
           {
             "value": true,
             "controlAddress": "/logIncoming"
+          },
+          {
+            "value": true,
+            "controlAddress": "/logOutgoing"
           }
         ],
         "niceName": "OSC",
         "type": "OSC",
         "scripts": {
-          "items": [
-            {
-              "niceName": "Script",
-              "type": "BaseItem",
-              "scriptParams": {
-              }
-            }
-          ],
           "viewOffset": [
             0,
             0
@@ -168,12 +171,6 @@
           "viewZoom": 1.0
         },
         "params": {
-          "parameters": [
-            {
-              "value": true,
-              "controlAddress": "/useHierarchy"
-            }
-          ],
           "containers": {
             "oscInput": {
             },
@@ -184,15 +181,6 @@
                     {
                       "value": "127.0.0.1",
                       "controlAddress": "/remoteHost"
-                    },
-                    {
-                      "value": 41234,
-                      "hexMode": false,
-                      "controlAddress": "/remotePort"
-                    },
-                    {
-                      "value": true,
-                      "controlAddress": "/listenToFeedback"
                     }
                   ],
                   "niceName": "OSC Output",
@@ -206,20 +194,6 @@
               "viewZoom": 1.0
             },
             "pass_through": {
-              "parameters": [
-                {
-                  "value": "/modules/osc",
-                  "controlAddress": "/outputModule",
-                  "enabled": true,
-                  "type": "Target",
-                  "niceName": "Output module",
-                  "customizable": false,
-                  "removable": true,
-                  "description": "Target module to send the raw data to",
-                  "hideInEditor": false,
-                  "feedbackOnly": false
-                }
-              ]
             }
           }
         },
@@ -233,28 +207,17 @@
         "values": {
           "parameters": [
             {
-              "controlAddress": "/m",
-              "type": "String",
-              "niceName": "m",
-              "customizable": true,
-              "removable": true,
-              "description": "",
-              "hideInEditor": false,
-              "feedbackOnly": false,
-              "shortName": "m"
-            },
-            {
-              "value": 111,
+              "value": 0,
               "hexMode": false,
-              "controlAddress": "/midi",
+              "controlAddress": "/_midi",
               "type": "Integer",
-              "niceName": "midi",
+              "niceName": "/midi",
               "customizable": true,
               "removable": true,
               "description": "",
               "hideInEditor": false,
               "feedbackOnly": false,
-              "shortName": "midi"
+              "shortName": "_midi"
             }
           ]
         }

@@ -91,22 +91,24 @@ void accelerometerSetup(){
   adxl.setInterrupt( ADXL345_INT_FREE_FALL_BIT,  0);
   adxl.setInterrupt( ADXL345_INT_ACTIVITY_BIT,   0);
   adxl.setInterrupt( ADXL345_INT_INACTIVITY_BIT, 0);
- 
+  Serial.println("Accelerometer setup complete");
 }
 
 
 bool readAccelerometer() {
+  Serial.println("Reading accelerometer");
+
   adxl.readXYZ(&x, &y, &z); //read the accelerometer values and store them in variables  x,y,z
   x = map(x,-320,320,0,127); // Should be 355 degrees but in practice I don't see values above 320...
   y = map(y,-320,320,0,127);
   z = map(z,-320,320,0,127);
   // Output x,y,z values
-  //    Serial.print("values of X , Y , Z: ");
-  //    Serial.print(x);
-  //    Serial.print(" , ");
-  //    Serial.print(y);
-  //    Serial.print(" , ");
-  //    Serial.println(z);
+  Serial.print("values of X , Y , Z: ");
+  Serial.print(x);
+  Serial.print(" , ");
+  Serial.print(y);
+  Serial.print(" , ");
+  Serial.println(z);
   
   double xyz[3];
   //double ax,ay,az;
@@ -118,23 +120,23 @@ bool readAccelerometer() {
   aIntY = map(aIntY,-200,200,0,127);
   aIntZ = map(aIntZ,-200,200,0,127);
   
-  //    Serial.print("X=");
-  //    Serial.print(aIntX);
-  //    Serial.println(" g");
-  //    Serial.print("Y=");
-  //    Serial.print(aIntY);
-  //    Serial.println(" g");
-  //    Serial.print("Z=");
-  //    Serial.print(aIntZ);
-  //    Serial.println(" g");
-  //    Serial.println("**********************");
+      Serial.print("X=");
+      Serial.print(aIntX);
+      Serial.println(" g");
+      Serial.print("Y=");
+      Serial.print(aIntY);
+      Serial.println(" g");
+      Serial.print("Z=");
+      Serial.print(aIntZ);
+      Serial.println(" g");
+      Serial.println("**********************");
   delay(1); // 50
  
   return 0;
 }
 
 void checkAccelerometer(){
-
+    Serial.println("checking accelerometer");
     if ( accelX == "checked"|| accelY == "checked" || accelZ == "checked" || pan_ == "checked" || tilt_ == "checked" || roll_ == "checked"){
     
         error = readAccelerometer(); // Using the seed library (thank you!)

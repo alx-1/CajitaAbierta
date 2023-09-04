@@ -23,22 +23,6 @@ AsyncWebServer server(80); //*
 // Create an Event Source on /events
 AsyncEventSource events("/events"); //*
 
-//String processor(const String& var){
-//  Serial.println("something");
-//  return String("there");
-//  //getSensorReadings();
-//  //Serial.println(var);
-//  //if(var == "TEMPERATURE"){
-//  //  return String(temperature);
-//  //}
-//  //else if(var == "HUMIDITY"){
-//  //  return String(humidity);
-//  //}
-//  //else if(var == "PRESSURE"){
-//  //  return String(pressure);
-//  //}
-//}
-
 
 void portalScanNetworks(){
   int n = WiFi.scanNetworks();
@@ -99,9 +83,7 @@ void startPortal(){
   preferencesGet();
   //monContentHTMLScript();
   monContentHome(); // Try to update with the latest values
-  #if defined Accelerometer
-  monContentAccel();
-  #endif
+
   #if defined PressureSensor
   monContentBreath();
   #endif
@@ -114,10 +96,23 @@ void startPortal(){
   server.onNotFound([](AsyncWebServerRequest *request){
     Serial.println("Captive Portal-ish");
     request->send(200, "text/html", contentHeadStyle+menuHome+routersList+contentHome); 
+    //request->send(200, "text/html", "hello home"); 
+    });
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    Serial.println("Captive Portal-ish");
+    //request->send(200, "text/html", paramPage); 
+    request->send(200, "text/html", "hello home"); 
     });
   
   server.on("/accel.html", HTTP_GET, [](AsyncWebServerRequest *request){ 
+    Serial.println("whaaat accel");
+    #if defined Accelerometer
+    monContentAccel(); // _This_ is weird
+    #endif
     request->send(200, "text/html", contentHeadStyle+contentAccel); 
+    //request->send(200, "text/html", contentHeadStyle+"hello world"); 
+
     });
   
   server.on("/blowsuck.html", HTTP_GET, [](AsyncWebServerRequest *request){ 

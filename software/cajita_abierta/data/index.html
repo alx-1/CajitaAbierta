@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title> ~webparam~ interface </title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div>
+        <b>IP:</b> <input type="text" id="ipaddr" alt="IP address of the device" onkeypress="ipEnterKeyDetect(event)">
+        <input type="button" value="connect" onclick="connect()">
+        <div id="wrapper" class="pagewrapper">
+            <!-- widget tree gets loaded in here -->
+        </div>
+        <div class="footer"> <p id="logline">of course!</p> </div>
+    </div>
+    <script language="javascript" type="text/javascript" src="webparam.js"></script>
+</body>
+</html>

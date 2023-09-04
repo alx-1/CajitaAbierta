@@ -185,7 +185,7 @@ void preferencesGet(){
   // Sensors
   #if defined Accelerometer
   accelX = preferences.getString("accelX","");
-  //Serial.print("accelX: ");Serial.println(accelX);
+  Serial.print("accelX: ");Serial.println(accelX);
   if (accelX == "checked"){
     // add "accelX" to an array of keys
   }
